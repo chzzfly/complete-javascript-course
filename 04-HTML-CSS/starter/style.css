@@ -1,0 +1,59 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: blanchedalmond;
+  font-family: serif;
+  font-size: 16px;
+  padding: 50px;
+}
+
+h1 {
+  font-size: 27px;
+  margin-bottom: 25px;
+}
+
+h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+p {
+  margin-bottom: 20px;
+}
+
+.first {
+  /* background-color: aqua; */
+  color: brown;
+}
+
+#your-name {
+  background-color: beige;
+  border: 5px solid red;
+  width: 400px;
+  padding: 25px;
+  margin-top: 30px;
+}
+
+input,
+button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+a {
+  background-color: coral;
+  text-decoration: none;
+}
+
+#your-name h2 {
+  color: olive;
+}
+
+img {
+  width: 300px;
+  /* height: 200px; */
+}
