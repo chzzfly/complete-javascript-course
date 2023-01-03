@@ -12,6 +12,10 @@ const restaurant = {
   starterMenu: ['Focaccia', 'Bruschetta', 'Garlic Bread', 'Caprese Salad'],
   mainMenu: ['Pizza', 'Pasta', 'Risotto'],
 
+  order: function (stratIndex, mainIndex) {
+    return [this.starterMenu[stratIndex], this.mainMenu[mainIndex]];
+  },
+
   openingHours: {
     thu: {
       open: 12,
@@ -27,3 +31,56 @@ const restaurant = {
     },
   },
 };
+
+const { sat, ...weekdays } = restaurant.openingHours;
+console.log(weekdays);
+
+const [pizza, , risotto, ...otherFoods] = [
+  ...restaurant.mainMenu,
+  ...restaurant.starterMenu,
+];
+console.log(pizza, risotto, otherFoods);
+
+console.log(undefined || 0 || null || NaN);
+
+/*
+const arr = [7, 8, 9];
+const arr1 = arr.unshift(1, 2);
+console.log(arr1, typeof arr1, arr);
+const newArr = [1, 2, ...arr];
+console.log(newArr);
+*/
+
+/*
+let a = 111;
+let b = 999;
+const obj = { a: 23, b: 7, c: 15 };
+({ a, b } = obj);
+console.log(a, b);
+
+const {
+  thu: { open: o, close: c },
+} = restaurant.openingHours;
+console.log(o, c);
+*/
+
+// const arr = [2, 3, 4];
+// const a = arr[0];
+// const b = arr[1];
+// const c = arr[2];
+
+// const [x, y, z] = arr;
+// console.log(x, y, z);
+
+// const [first1, , , second1 = null] = restaurant.mainMenu;
+// console.log(first1, second1);
+
+// const [starter, mainCourse] = restaurant.order(2, 0);
+// console.log(starter, mainCourse);
+
+// const {
+//   name: first = 1,
+//   categories: second = 1,
+//   notEx: third = 1,
+// } = restaurant;
+// console.log(first, `\n`, second, third);
