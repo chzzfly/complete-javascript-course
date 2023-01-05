@@ -70,13 +70,21 @@ for (const [index, value] of game.scored.entries()) {
 }
 
 // 2. 计算对象的平均值，一个东西出现了2次，可以重构
-let sum = 0;
-for (const x of Object.values(game.odds)) {
-  sum += x;
+let average = 0;
+const odds = Object.values(game.odds);
+for (const x of odds) {
+  average += x;
 }
 
-let average = sum / Object.values(game.odds).length;
+average = average / odds.length;
 console.log(average);
+
+// 2. 老师的不讲武德解法
+// const odds = Object.values(game.odds);
+// let average = 0;
+// for (const odd of odds) average += odd;
+// average /= odds.length;
+// console.log(average);
 
 // 3.没有理解要做什么？
 /*
@@ -86,7 +94,7 @@ console.log(average);
       Odd of victory Borrussia Dortmund: 6.5
 Get the team names directly from the game object, don't hardcode them (except for "draw"). HINT: Note how the odds and the game objects have the same property names 😉
 */
-// fixme 首先只需要根据情况来打印三行中的一行即可。
+// fixme 只需要根据情况来打印三行中的一行即可。
 
 for (const [team, odd] of Object.entries(game.odds)) {
   // console.log(team, odd);
