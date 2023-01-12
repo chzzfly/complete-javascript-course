@@ -84,3 +84,23 @@ console.log(o, c);
 //   notEx: third = 1,
 // } = restaurant;
 // console.log(first, `\n`, second, third);
+
+const restR = new Map();
+restR.set(1, '山西，中国');
+// console.log(restR.set(2, '济源,中国'));
+
+restR
+  .set(3, '不知道写啥了')
+  .set('onceMore', 'yes, another element')
+  .set('lastEl', true)
+  .set(true, 'We are open')
+  .set(false, 'we are closed');
+
+console.log(restR);
+
+// console.log(restR.get('lastEl'));
+
+const time = 21;
+
+const test = [...restR];
+console.log(test);

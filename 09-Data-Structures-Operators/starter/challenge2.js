@@ -64,7 +64,12 @@ const game = {
   },
 };
 
-// 1.todo bug fixme 为什么可以用const，值不是在变吗？需要结合栈中的数据存储知识来解答，数组所存的是内存中的引用，所以可以用const。115视频的0511分钟弹幕，几天后期待解答。
+// test
+
+console.log(game.keys());
+
+// 1.todo bug fixme 为什么可以用const，值不是在变吗？需要结合栈中的数据存储知识来解答。
+// A: 数组所存的是内存中的引用，所以可以用const。115视频的0511分钟弹幕，几天后期待解答。-230112一周后没有解答，效率不高。
 for (const [index, value] of game.scored.entries()) {
   console.log(`Goal ${index + 1}: ${value}`);
 }
@@ -131,7 +136,8 @@ const scorers = {};
 
 for (const player of game.scored) {
   console.log(scorers[player]);
-  // todo 如果是第一次遇到这个人，那么这就是undefined的，也就是假的，所以选择后面的表达式，如果第二次遇到这个人，那么这个值就是真的，就是第一个表达式。太精妙了！解决了if else很难解决的问题。学习了！
+  // todo 如果是第一次遇到这个人，那么这就是undefined的，也就是假的，所以选择后面的表达式，如果第二次遇到这个人，那么这个值就是真的，就是第一个表达式。
+  // done太精妙了！解决了if else很难解决的问题。学习了！
   scorers[player]
     ? (scorers[player] = scorers[player] + 1)
     : (scorers[player] = 1);
