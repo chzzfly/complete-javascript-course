@@ -84,7 +84,7 @@ const displayMovements = function (movements) {
       <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-      <div class="movements__value">${mov}</div>
+      <div class="movements__value">${mov}€</div>
     </div>
     `;
     containerMovements.insertAdjacentHTML("afterbegin", html);
@@ -112,6 +112,29 @@ const calcDisplayBalance = function (movements) {
 };
 
 calcDisplayBalance(account1.movements);
+
+// 计算存款总额
+const eurToUsd = 1.1;
+const calcDisplaySummary = function (movements) {
+  const sumIn = movements
+    .filter((mov) => mov > 0)
+    // .map((mov) => mov * eurToUsd)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${sumIn}€`;
+
+  const sumOut = movements
+    .filter((mov) => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(sumOut)}€`;
+  //每次存入一次，得到存款1.2%的利息，我们的规则，低于1的利息不算数
+  const interest = movements
+    .filter((mov) => mov > 0)
+    .map((mov) => mov * 0.012)
+    .filter((interest) => interest >= 1)
+    .reduce((acc, cur) => acc + cur, 0);
+  labelSumInterest.textContent = `${interest}€`;
+};
+calcDisplaySummary(account1.movements);
 
 // console.log(calcDisplayBalance(movements));// 函数没有返回值
 
@@ -152,8 +175,6 @@ const checkDogs = function (dogsJulia, dogsKate) {
 
 // checkDogs([3, 5, 2, 12, 7], [4, 1, 15, 8, 3]);
 // checkDogs([9, 16, 6, 8, 3], [10, 5, 6, 1, 4]);
-
-const eurToUsd = 1.1;
 
 // const movementsUSD = movements.map(function (mov) {
 //   return mov * eurToUsd;
@@ -222,7 +243,7 @@ TEST DATA 1: [5, 2, 4, 1, 15, 8, 3]
 TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
 
 GOOD LUCK 😀
-*/
+
 
 const calcAverageHumanAge = function (ages) {
   // 使用了 箭头函数、三元表达式
@@ -249,3 +270,33 @@ const calcAverageHumanAge = function (ages) {
 console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
 
 console.log((36 + 32 + 76 + 48 + 28) / 5);
+*/
+
+///////////////////////////////////////
+// Coding Challenge #3
+
+/* 
+Rewrite the 'calcAverageHumanAge' function from the previous challenge, but this time as an arrow function, and using chaining!
+
+TEST DATA 1: [5, 2, 4, 1, 15, 8, 3]
+TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
+
+GOOD LUCK 😀
+
+
+const calcAverageHumanAge = function (arrs) {
+  return arrs.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+};
+console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
+console.log(calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]));
+
+*/
+
+console.log(accounts);
+
+const account = accounts.find((acc) => acc.owner === "Jessica Davis");
+console.log(account);
+
+for (const acc of accounts) {
+  if (acc.owner === "Jonas Schmedtmann") console.log(acc);
+}
