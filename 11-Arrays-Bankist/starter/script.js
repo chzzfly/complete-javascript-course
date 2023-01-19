@@ -75,9 +75,25 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
 
-const displayMovements = function (movements) {
+// computing usernames
+const createUserNames = function (names) {
+  names.forEach(function (name) {
+    name.userName = name.owner
+      .toLowerCase()
+      .split(" ")
+      .map((name) => name[0])
+      .join("");
+  });
+};
+createUserNames(accounts);
+// console.log(accounts);
+
+// 获取存取款信息
+const displayMovements = function (movements, sort = false) {
+  //我们不想让sort改变原数组，因为要做一个拷贝
   containerMovements.innerHTML = "";
-  movements.forEach(function (mov, i) {
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? "deposit" : "withdrawal";
     const html = `
     <div class="movements__row">
@@ -91,52 +107,167 @@ const displayMovements = function (movements) {
   });
 };
 
-displayMovements(account1.movements);
-
-// computing usernames
-
-const createUserNames = function (name) {
-  return name
-    .toLowerCase()
-    .split(" ")
-    .map((name) => name[0])
-    .join("");
-};
-const user = "Steven Thomas Williams";
+// displayMovements(account1.movements);
 
 // 计算余额
 
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance}€`;
+const calcDisplayBalance = function (acc) {
+  // JS中默认的程序拷贝都是浅拷贝，指定对象的元素的值更改会改变原来的值
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${acc.balance}€`;
 };
 
-calcDisplayBalance(account1.movements);
+// calcDisplayBalance(account1.movements);
 
-// 计算存款总额
+// 计算存款，取款，利息
 const eurToUsd = 1.1;
-const calcDisplaySummary = function (movements) {
-  const sumIn = movements
+const calcDisplaySummary = function (acc) {
+  const sumIn = acc.movements
     .filter((mov) => mov > 0)
     // .map((mov) => mov * eurToUsd)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumIn.textContent = `${sumIn}€`;
 
-  const sumOut = movements
+  const sumOut = acc.movements
     .filter((mov) => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(sumOut)}€`;
+
   //每次存入一次，得到存款1.2%的利息，我们的规则，低于1的利息不算数
-  const interest = movements
+  const interest = acc.movements
     .filter((mov) => mov > 0)
-    .map((mov) => mov * 0.012)
+    .map((mov) => mov * (acc.interestRate / 100))
     .filter((interest) => interest >= 1)
     .reduce((acc, cur) => acc + cur, 0);
+  // console.log(interest);
   labelSumInterest.textContent = `${interest}€`;
 };
-calcDisplaySummary(account1.movements);
+// calcDisplaySummary(account1.movements);
 
-// console.log(calcDisplayBalance(movements));// 函数没有返回值
+// 更新UI函数
+
+const updateUI = function (acc) {
+  // 显示存取款详情
+  displayMovements(acc.movements);
+  // 显示余额
+  calcDisplayBalance(acc);
+  // 显示总结
+  calcDisplaySummary(acc);
+};
+
+// event handler，实现登陆功能
+let currentAccount;
+
+btnLogin.addEventListener("click", function (e) {
+  // 阻止页面自动刷新（提交）
+  e.preventDefault();
+  currentAccount = accounts.find(
+    (account) => account.userName === inputLoginUsername.value
+  );
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // 登陆成功的话，清空用户名和密码两个输入框
+    console.log(currentAccount);
+    // inputLoginUsername.value = inputLoginPin.value = "";
+    inputLoginPin.blur();
+    // 显示账户界面和登陆消息
+    labelWelcome.textContent = `Welcome Back, ${
+      currentAccount.owner.split(" ")[0]
+    }`;
+    containerApp.style.opacity = 100;
+    updateUI(currentAccount);
+  } else {
+    containerApp.style.opacity = 0;
+    alert("Wrong username or password.");
+  }
+});
+
+// 实现转账功能
+
+btnTransfer.addEventListener("click", function (e) {
+  e.preventDefault();
+  const accountTo = accounts.find(
+    (acc) => acc.userName === inputTransferTo.value
+  );
+  const amount = Number(inputTransferAmount.value);
+
+  // 清空两个输入框
+  inputTransferAmount.value = inputTransferTo.value = "";
+
+  // 对转出账户，如果转出金额小于本账户余额，则先对本账户的余额进行扣除，显示这个转出操作，执行转出
+  if (
+    accountTo &&
+    accountTo !== currentAccount &&
+    amount > 0 &&
+    amount <= currentAccount.balance
+  ) {
+    currentAccount.movements.push(-amount);
+    accountTo.movements.push(amount);
+    updateUI(currentAccount);
+  } else console.log("something wrong.");
+});
+// 通过其他方式获得账户余额
+// console.log(Number(labelBalance.textContent.slice(0, -1)));
+//   if (amount <= Number(labelBalance.textContent.slice(0, -1))) {
+//     // 妙啊，直接给当前账户的操作添加一个负的转入
+//     currentAccount.movements.push(-amount);
+//     displayMovements(currentAccount.movements);
+//     calcDisplayBalance(currentAccount.movements);
+//     calcDisplaySummary(currentAccount);
+//     accounts.find((acc) => acc.userName === accountTo).movements.push(amount);
+//     console.log(currentAccount.movements);
+//   } else {
+//     alert("请检查账户余额");
+//   }
+// });
+
+// 向银行申请贷款，需要有一笔存款且大于等于贷款金额的10%
+btnLoan.addEventListener("click", function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (
+    amount > 0 &&
+    currentAccount.movements.some((mov) => mov >= amount * 0.1)
+  ) {
+    currentAccount.movements.push(amount);
+    updateUI(currentAccount);
+  }
+  inputLoanAmount.value = "";
+});
+
+// 注销账户
+
+btnClose.addEventListener("click", function (e) {
+  e.preventDefault();
+  // console.log(
+  //   inputClosePin.value,
+  //   inputCloseUsername.value,
+  //   currentAccount.userName,
+  //   currentAccount.pin
+  // );
+  if (
+    inputCloseUsername.value === currentAccount.userName &&
+    inputClosePin.value === String(currentAccount.pin)
+  ) {
+    // console.log("deleted");
+    const index = accounts.findIndex(
+      (acc) => acc.userName === inputCloseUsername.value
+    );
+    console.log(index);
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+    inputCloseUsername.value = inputCloseUsername.value = "";
+  }
+});
+
+// 对账户的操作进行排序，降序排列
+// 表明状态的变量
+let flag = false;
+btnSort.addEventListener("click", function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !flag);
+  flag = !flag;
+});
 
 ///////////////////////////////////////
 // Coding Challenge #1
@@ -290,8 +421,7 @@ const calcAverageHumanAge = function (arrs) {
 console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
 console.log(calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]));
 
-*/
-
+// 使用for-of方法重构此功能
 console.log(accounts);
 
 const account = accounts.find((acc) => acc.owner === "Jessica Davis");
@@ -300,3 +430,4 @@ console.log(account);
 for (const acc of accounts) {
   if (acc.owner === "Jonas Schmedtmann") console.log(acc);
 }
+*/
