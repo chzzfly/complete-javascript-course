@@ -167,7 +167,7 @@ btnLogin.addEventListener("click", function (e) {
 
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     // 登陆成功的话，清空用户名和密码两个输入框
-    console.log(currentAccount);
+    // console.log(currentAccount);
     // inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
     // 显示账户界面和登陆消息
@@ -431,3 +431,151 @@ for (const acc of accounts) {
   if (acc.owner === "Jonas Schmedtmann") console.log(acc);
 }
 */
+
+// const x = Array.from({ length: 100 }, () => Math.trunc(Math.random() * 100));
+// console.log(x);
+
+/* array methods practices.
+
+const bankDepositSum = accounts
+  .flatMap((acc) => acc.movements)
+  .filter((deposit) => deposit > 0)
+  .reduce((sum, cur) => sum + cur, 0);
+
+console.log(bankDepositSum);
+
+// reduce 返回一个对象，初始化对象
+const bankSums = accounts
+  .flatMap((acc) => acc.movements)
+  .reduce(
+    (sums, cur) => {
+      sums[cur > 0 ? "deposit" : "withdraws"] += cur;
+      // console.log(cur);
+      // console.log(sums["deposit"]);
+      return sums;
+    },
+    { deposit: 0, withdraws: 0 }
+  );
+
+const { deposit, withdraws } = bankSums;
+console.log(deposit, withdraws);
+
+// 转换字符串：this is a nice title -> This Is a Nice Title
+
+const convertTitleCase = function (title) {
+  const capitzalize = (str) => str[0].toUpperCase() + str.slice(1);
+  const exception = ["a", "an", "and", "the", "but", "or", "on", "in", "with"];
+  // return title
+  //   .split(" ")
+  //   .map((cur) => {
+  //     if (!exception.includes(cur)) {
+  //       return cur[0].toUpperCase() + cur.toLowerCase().slice(1);
+  //     } else {
+  //       return cur[0] + cur.toLowerCase().slice(1);
+  //     }
+  //   })
+  //   .join(" ");
+  // =======老师的讲解========//
+  const titleCase = title
+    .toLowerCase()
+    .split(" ")
+    .map((word) => (exception.includes(word) ? word : capitzalize(word)))
+    .join(" ");
+  // console.log(titleCase);
+  return capitzalize(titleCase);
+};
+
+console.log(convertTitleCase("this is a nice title"));
+console.log(convertTitleCase("this is a LONG title but not too long"));
+console.log(convertTitleCase("and here is another title with an EXAMPLE"));
+
+*/
+///////////////////////////////////////
+// Coding Challenge #4
+
+/* 
+Julia and Kate are still studying dogs, and this time they are studying if dogs are eating too much or too little.
+Eating too much means the dog's current food portion is larger than the recommended portion, and eating too little is the opposite.
+Eating an okay amount means the dog's current food portion is within a range 10% above and 10% below the recommended portion (see hint).
+
+1. Loop over the array containing dog objects, and for each dog, calculate the recommended food portion and add it to the object as a new property. Do NOT create a new array, simply loop over the array. Forumla: recommendedFood = weight ** 0.75 * 28. (The result is in grams of food, and the weight needs to be in kg)
+2. Find Sarah's dog and log to the console whether it's eating too much or too little. HINT: Some dogs have multiple owners, so you first need to find Sarah in the owners array, and so this one is a bit tricky (on purpose) 🤓
+3. Create an array containing all owners of dogs who eat too much ('ownersEatTooMuch') and an array with all owners of dogs who eat too little ('ownersEatTooLittle').
+4. Log a string to the console for each array created in 3., like this: "Matilda and Alice and Bob's dogs eat too much!" and "Sarah and John and Michael's dogs eat too little!"
+5. Log to the console whether there is any dog eating EXACTLY the amount of food that is recommended (just true or false)
+6. Log to the console whether there is any dog eating an OKAY amount of food (just true or false)
+7. Create an array containing the dogs that are eating an OKAY amount of food (try to reuse the condition used in 6.)
+8. Create a shallow copy of the dogs array and sort it by recommended food portion in an ascending order (keep in mind that the portions are inside the array's objects)
+
+HINT 1: Use many different tools to solve these challenges, you can use the summary lecture to choose between them 😉
+HINT 2: Being within a range 10% above and below the recommended portion means: current > (recommended * 0.90) && current < (recommended * 1.10). Basically, the current portion should be between 90% and 110% of the recommended portion.
+
+GOOD LUCK 😀
+*/
+
+// TEST DATA:
+const dogs = [
+  { weight: 22, curFood: 250, owners: ["Alice", "Bob"] },
+  { weight: 8, curFood: 200, owners: ["Matilda"] },
+  { weight: 13, curFood: 275, owners: ["Sarah", "John"] },
+  { weight: 32, curFood: 340, owners: ["Michael"] },
+];
+
+// 1.
+// dogs.map((dog) => (dog["recommendedFood"] = dog.weight ** 0.75 * 28));
+
+dogs.forEach(function (dog) {
+  dog["recommendedFood"] = Math.trunc(dog.weight ** 0.75 * 28);
+});
+
+console.log(dogs);
+
+// 2.
+const dogSarah = dogs.find((dog) => dog.owners.includes("Sarah"));
+if (dogSarah.curFood > dogSarah.recommendedFood * 1.1)
+  console.log("Eating too much.");
+else if (dogSarah.curFood < dogSarah.recommendedFood * 0.9)
+  console.log("Eating too little.");
+// console.log(dogSarah);
+
+// 3.
+const ownersEatTooMuch = dogs
+  .filter((dog) => dog.curFood > dog.recommendedFood * 1.1)
+  .flatMap((dog) => dog.owners);
+const ownersEatTooLittle = dogs
+  .filter((dog) => dog.curFood < dog.recommendedFood * 0.9)
+  .flatMap((dog) => dog.owners);
+console.log(ownersEatTooMuch);
+console.log(ownersEatTooLittle);
+
+// 4.
+
+console.log(`${ownersEatTooMuch.join(" and ")}'s dogs eat too much!`);
+console.log(`${ownersEatTooLittle.join(" and ")}'s dogs eat too little!`);
+
+// 5.
+console.log(dogs.some((dog) => dog.curFood === dog.recommendedFood));
+// 6.
+console.log(
+  dogs.some(
+    (dog) =>
+      dog.curFood > dog.recommendedFood * 0.9 &&
+      dog.curFood < dog.recommendedFood * 1.1
+  )
+);
+
+const dogsOk = dogs.filter(
+  (dog) =>
+    dog.curFood > dog.recommendedFood * 0.9 &&
+    dog.curFood < dog.recommendedFood * 1.1
+);
+
+console.log(dogsOk);
+
+// 7. 最不拿手的sort，直接看文档，直接看例子，甚至不需要弄懂就能用，呵呵哈哈呼呼！
+
+const dogsAscending = dogs
+  .slice()
+  .sort((a, b) => a.recommendedFood - b.recommendedFood);
+
+console.log(dogsAscending);
