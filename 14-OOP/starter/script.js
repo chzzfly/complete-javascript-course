@@ -302,3 +302,36 @@ class CarCl {
     this.speed = speed * 1.6;
   }
 }
+
+class EVCL extends CarCl {
+  // private field
+  #charge;
+
+  constructor(make, speed, charge) {
+    super(make, speed);
+    this.#charge = charge;
+  }
+
+  chargeBattery(chargeTo) {
+    this.#charge = chargeTo;
+    return this;
+  }
+
+  // 多态：子类的加速方法覆盖了父类的加速方法
+  accelerate() {
+    this.speed += 20;
+    this.#charge -= 1;
+    console.log(
+      `${this.make} going at ${this.speed} km/h, with a charge of ${
+        this.#charge
+      }`
+    );
+    return this;
+  }
+}
+
+const rivian = new EVCL('Rivian', 120, 23);
+
+console.log(rivian);
+rivian.accelerate().brake().brake().chargeBattery(50).accelerate();
+console.log(rivian.speedUS);
