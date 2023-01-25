@@ -64,22 +64,22 @@ Car.prototype.brake = function () {
 const BMW = new Car('BMW', 120);
 const Mercedes = new Car('Mercedes', 95);
 
-console.log(BMW);
-console.log(Mercedes);
+// console.log(BMW);
+// console.log(Mercedes);
 
-BMW.accelerate();
-BMW.accelerate();
-BMW.accelerate();
-BMW.accelerate();
-Mercedes.brake();
+// BMW.accelerate();
+// BMW.accelerate();
+// BMW.accelerate();
+// BMW.accelerate();
+// Mercedes.brake();
 
-console.log(Car);
+// console.log(Car);
 
-const hanshu = function () {
-  console.log('只是一个测试函数，看看这个普通的函数是否有prototype property');
-};
+// const hanshu = function () {
+//   console.log('只是一个测试函数，看看这个普通的函数是否有prototype property');
+// };
 
-console.log(hanshu);
+// console.log(hanshu);
 
 ///////////////////////////////////////
 // Coding Challenge #2
@@ -122,9 +122,74 @@ class CarCl {
 }
 
 const ford = new CarCl('Ford', 120);
-ford.speedUS;
-console.log(ford.speed);
-ford.speedUS = 100;
-console.log(ford.speed);
-ford.speedUS;
-ford.accelerate();
+// ford.speedUS;
+// console.log(ford.speed);
+// ford.speedUS = 100;
+// console.log(ford.speed);
+// ford.speedUS;
+// ford.accelerate();
+
+///////////////////////////////////////
+// Coding Challenge #3
+
+/* 
+1. Use a constructor function to implement an Electric Car (called EV) as a CHILD "class" of Car. Besides a make and current speed, the EV also has the current battery charge in % ('charge' property);
+2. Implement a 'chargeBattery' method which takes an argument 'chargeTo' and sets the battery charge to 'chargeTo';
+3. Implement an 'accelerate' method that will increase the car's speed by 20, and decrease the charge by 1%. Then log a message like this: 'Tesla going at 140 km/h, with a charge of 22%';
+4. Create an electric car object and experiment with calling 'accelerate', 'brake' and 'chargeBattery' (charge to 90%). Notice what happens when you 'accelerate'! HINT: Review the definiton of polymorphism 😉
+
+DATA CAR 1: 'Tesla' going at 120 km/h, with a charge of 23%
+
+GOOD LUCK 😀
+*/
+
+// console.log(Car);
+
+const EV = function (make, speed, charge) {
+  Car.call(this, make, speed);
+  this.charge = charge;
+};
+
+// 将ev类的原型链接到父类的原型，这将创建一个有继承关系的新对象
+EV.prototype = Object.create(Car.prototype);
+
+// 创建对象的方法
+EV.prototype.chargeBattery = function (chargeTo) {
+  this.charge = chargeTo;
+};
+
+// 多态：子类的加速方法覆盖了父类的加速方法
+EV.prototype.accelerate = function () {
+  this.speed += 20;
+  this.charge -= 1;
+  console.log(
+    `${this.make} going at ${this.speed} km/h, with a charge of ${this.charge}`
+  );
+};
+
+const tesla = new EV('Tesla', 120, 23);
+
+// 查看EV类的原型对象的构造函数，应该是EV，现在是Car
+console.log(EV.prototype.constructor);
+// tesla实例的原型proto应该是EV，EV的原型proto是Car，现在是不对的，更改它：
+EV.prototype.constructor = EV;
+
+// 没有什么大的影响，只是构造函数变了
+console.log(EV.prototype.constructor);
+
+// 测试程序是否正常工作
+console.log(tesla);
+// console.log(tesla.speed);
+// tesla.accelerate();
+// tesla.accelerate();
+// tesla.chargeBattery(100);
+// tesla.accelerate();
+// tesla.brake();
+// tesla.brake();
+// tesla.brake();
+// tesla.brake();
+// tesla.brake();
+// tesla.accelerate();
+// tesla.accelerate();
+// tesla.accelerate();
+// tesla.accelerate();
