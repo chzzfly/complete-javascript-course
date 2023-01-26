@@ -80,6 +80,7 @@ class App {
     inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
   }
 
+  // render workout form，渲染锻炼的输入表格-绑定事件：用户提交新的锻炼记录
   _newWorkout(e) {
     e.preventDefault();
     // 清空输入框
@@ -108,29 +109,48 @@ class App {
 
 const app = new App();
 
+// 数据类
+
 class Workout {
-  constructor(id, distance, duration, coords, date) {
-    this.id = id;
-    this.distance = distance;
+  date = new Date();
+  // 如果有很多用户，有人在同时创建对象，那么依赖时间的ID就会有冲突
+  id = (Date.now() + '').slice(-10);
+
+  constructor(coords, distance, duration) {
+    this.coords = coords; // [lat, lng]
+    this.distance = distance; // in km
+    this.duration = duration; // in min
   }
 }
 
-// class Runing extends Workout {
-//   supper(id,distance,duration,coords,date);
-//   constructor(id,distance,duration,coords,date,cadence,pace){
-//     this.cadence = cadence;
-//     this.pace = pace;
-//   }
-// }
+class Runing extends Workout {
+  constructor(coords, distance, duration, cadence) {
+    super(coords, distance, duration);
+    this.cadence = cadence;
+    this.clacPace();
+  }
 
-// class Cycling extends Workout{
-//   supper(id,distance,duration,coords,date);
-//   constructor(id,distance,duration,coords,date,elevationGain,speed){
-//     this.elevationGain = elevationGain;
-//     this.speed = speed;
-//   }
-// }
+  clacPace() {
+    // min/km
+    this.pace = this.duration / this.distance;
+    return this.pace;
+  }
+}
 
-// 添加地图，点击地图设置标记
+class Cycling extends Workout {
+  constructor(coords, distance, duration, elevationGain) {
+    super(coords, distance, duration);
+    this.elevationGain = elevationGain;
+    this.clacSpeed();
+  }
 
-// render workout form，渲染锻炼的输入表格-绑定事件：用户提交新的锻炼记录
+  clacSpeed() {
+    // km/hour
+    this.speed = this.distance / (this.duration / 60);
+    return this.speed;
+  }
+}
+
+// const run1 = new Runing([39, 112], 5, 30, 178);
+// const cycling1 = new Cycling([39, 112], 27, 95, 523);
+// console.log(run1, cycling1);
