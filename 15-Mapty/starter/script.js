@@ -11,43 +11,126 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
-if (navigator.geolocation)
-  navigator.geolocation.getCurrentPosition(
-    function (position) {
-      // console.log(position);
-      const { latitude, longitude } = position.coords;
-      // const timeGetPosition = new Date(position.timestamp);
-      // console.log(latitude, longitude, timeGetPosition);
-      // console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
+// let map, mapEvent;
 
-      const coords = [latitude, longitude];
+// 重构我们的代码
+// 建立两个大类：一个是App逻辑，一个是用户数据。
+// 所有对象公用的property，写在public field中，每个对象个性化的property，在new时需要传入参数的，写在constructor中
+// 建4个类，prettier一直报错？
 
-      const map = L.map('map').setView(coords, 14);
+class App {
+  // private filed，但是是所有通过class创建的对象共有的，理解private的含义：外部无法访问。
+  #map;
+  #mapEvent;
 
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
+  // new 一个对象时，这个构造器会立即执行
+  constructor() {
+    // 外面的this，指向的是这个类创造的对象
+    // console.log(this);
+    this._getPosition();
 
-      map.on('click', function (mapEvent) {
-        console.log(mapEvent);
-        const { lat, lng } = mapEvent.latlng;
-        L.marker([lat, lng])
-          .addTo(map)
-          .bindPopup(
-            L.popup({
-              maxWidth: 250,
-              minWidth: 100,
-              autoClose: false,
-              closeOnClick: false,
-              className: 'running-popup',
-            })
-          )
-          .setPopupContent('cooooool!')
-          .openPopup();
-      });
-    },
-    function () {
-      alert('Could not get your position!');
-    }
-  );
+    // 事件监听函数调用的回调函数“this._newWorkout"，它里面的this会指向form元素，而不是 App class 创建的对象，我们需要重新指向
+    form.addEventListener('submit', this._newWorkout.bind(this));
+
+    // 切换跑步和骑车的输入框，这个回调函数里没有包含this，也就不需要处理
+    inputType.addEventListener('change', this._toggleElevationfield);
+  }
+
+  _getPosition() {
+    if (navigator.geolocation)
+      // 这个方法需要两个回调函数，一个是成功的获取位置，进行操作；一个是获取失败的提示。
+      navigator.geolocation.getCurrentPosition(
+        this._loadMap.bind(this),
+        function () {
+          alert('Could not get your position!');
+        }
+      );
+  }
+
+  _loadMap(position) {
+    // console.log(position);
+    const { latitude, longitude } = position.coords;
+    // const timeGetPosition = new Date(position.timestamp);
+    // console.log(latitude, longitude, timeGetPosition);
+    // console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
+
+    const coords = [latitude, longitude];
+    // _loadMap是被getCurrentPosition()方法调用的，普通的调用this不会有指向，因此需要绑定指向
+    console.log(this);
+    this.#map = L.map('map').setView(coords, 14);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(this.#map);
+
+    // 在地图上点击，希望地图出现标记（标记不会关闭）；希望左侧列表出现输入框
+    this.#map.on('click', this._showForm.bind(this));
+  }
+
+  _showForm(mapE) {
+    // 将捕获的mapE映射到公共private变量#mapEvent中，这样类中其他地方也能使用这个变量
+    this.#mapEvent = mapE;
+    form.classList.remove('hidden');
+    inputDistance.focus();
+  }
+
+  _toggleElevationfield() {
+    inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
+    inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
+  }
+
+  _newWorkout(e) {
+    e.preventDefault();
+    // 清空输入框
+    inputDistance.value =
+      inputDuration.value =
+      inputCadence.value =
+      inputElevation.value =
+        '';
+    // console.log(mapEvent);
+    const { lat, lng } = this.#mapEvent.latlng;
+    L.marker([lat, lng])
+      .addTo(this.#map)
+      .bindPopup(
+        L.popup({
+          maxWidth: 250,
+          minWidth: 100,
+          autoClose: false,
+          closeOnClick: false,
+          className: 'running-popup',
+        })
+      )
+      .setPopupContent('cooooool!')
+      .openPopup();
+  }
+}
+
+const app = new App();
+
+class Workout {
+  constructor(id, distance, duration, coords, date) {
+    this.id = id;
+    this.distance = distance;
+  }
+}
+
+// class Runing extends Workout {
+//   supper(id,distance,duration,coords,date);
+//   constructor(id,distance,duration,coords,date,cadence,pace){
+//     this.cadence = cadence;
+//     this.pace = pace;
+//   }
+// }
+
+// class Cycling extends Workout{
+//   supper(id,distance,duration,coords,date);
+//   constructor(id,distance,duration,coords,date,elevationGain,speed){
+//     this.elevationGain = elevationGain;
+//     this.speed = speed;
+//   }
+// }
+
+// 添加地图，点击地图设置标记
+
+// render workout form，渲染锻炼的输入表格-绑定事件：用户提交新的锻炼记录
