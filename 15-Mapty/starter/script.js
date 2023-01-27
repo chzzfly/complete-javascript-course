@@ -8,6 +8,26 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputGain = document.querySelector('.form__input--elevation');
 
+/*
+
+挑战：
+1. 添加编辑功能
+2. 添加删除一个workout的功能
+3. 添加删除所有workout的功能
+4. 通过特定的field进行排序，比如距离(稍难)
+5. 重新通过类创造对象，从localstorage获得的数据
+6. 添加更多报错和确认信息，更加友好和美观（稍难）
+7. 在地图上show所有的workouts（难）
+8. 在地图上显示运动轨迹，而不只是点（困难）
+9. 调用其他库，实现通过坐标显示实际在的位置比如国家和地区。（async学完后）
+10. 显示锻炼地点的时间和天气。（async学完后）
+
+查看twitter上其他人的情况：hashtag forgeted...
+
+
+
+*/
+
 // let map, mapEvent;
 
 // 重构我们的代码
