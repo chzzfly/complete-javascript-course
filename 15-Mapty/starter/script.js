@@ -337,7 +337,7 @@ class App {
     const workout = this.#workouts.find(
       work => work.id === workoutEl.dataset.id
     );
-    // console.log(workout);
+    console.log(workout);
 
     this.#map.setView(workout.coords, this.#mapZoomLevel + 1, {
       animate: true,
@@ -346,7 +346,9 @@ class App {
       },
     });
 
-    // workout.click();
+    workout.click();
+    // 将点击后的事件也存储起来
+    this._setLocalStorage();
   }
 
   _setLocalStorage() {
@@ -356,10 +358,32 @@ class App {
 
   _getLocalStorage() {
     const data = JSON.parse(localStorage.getItem('workouts'));
-    // console.log(data);
+    console.log(data);
     if (!data) return;
 
-    this.#workouts = data;
+    // 重新创建具有原型链的对象，而不是普通的对象
+    const dataClassBack = data.map(workout => {
+      if (workout.type === 'running') {
+        const { coords, distance, duration, cadence } = workout;
+        const work1 = new Running(coords, distance, duration, cadence);
+        work1.id = workout.id;
+        work1.date = workout.date;
+        work1.clicks = workout.clicks;
+        return work1;
+      }
+      if (workout.type === 'cycling') {
+        const { coords, distance, duration, gain, id } = workout;
+        const work1 = new Cycling(coords, distance, duration, gain);
+        work1.id = workout.id;
+        work1.date = workout.date;
+        work1.clicks = workout.clicks;
+        return work1;
+      }
+    });
+
+    console.log(dataClassBack);
+
+    this.#workouts = dataClassBack;
     this.#workouts.forEach(work => {
       this._renderWorkoutList(work);
     });
