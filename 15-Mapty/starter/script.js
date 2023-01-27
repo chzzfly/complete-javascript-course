@@ -6,7 +6,7 @@ const inputType = document.querySelector('.form__input--type');
 const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
-const inputElevation = document.querySelector('.form__input--elevation');
+const inputGain = document.querySelector('.form__input--elevation');
 
 // let map, mapEvent;
 
@@ -19,19 +19,19 @@ class App {
   // private filed，但是是所有通过class创建的对象共有的，理解private的含义：外部无法访问。
   #map;
   #mapEvent;
+  #mapZoomLevel = 13;
   #workouts = [];
 
   // new 一个对象时，这个构造器会立即执行
+  // this，指向的是这个类创造的对象
+  // console.log(this);
   constructor() {
-    // 外面的this，指向的是这个类创造的对象
-    // console.log(this);
     this._getPosition();
-
     // 事件监听函数调用的回调函数“this._newWorkout"，它里面的this会指向form元素，而不是 App class 创建的对象，我们需要重新指向
     form.addEventListener('submit', this._newWorkout.bind(this));
-
     // 切换跑步和骑车的输入框，这个回调函数里没有包含this，也就不需要处理
-    inputType.addEventListener('change', this._toggleElevationfield);
+    inputType.addEventListener('change', this._toggleGainfield);
+    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
   }
 
   // 类原型对象prototype的方法，作为对象的原型proto
@@ -56,7 +56,7 @@ class App {
     const coords = [latitude, longitude];
     // _loadMap是被getCurrentPosition()方法调用的，普通的调用this不会有指向，因此需要绑定指向
     console.log(this);
-    this.#map = L.map('map').setView(coords, 14);
+    this.#map = L.map('map').setView(coords, this.#mapZoomLevel + 1);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution:
@@ -80,7 +80,7 @@ class App {
     inputDistance.value =
       inputDuration.value =
       inputCadence.value =
-      inputElevation.value =
+      inputGain.value =
         '';
     // 关闭时，不需要动画，而是需要一个效果：就像输入框被固话成信息框一样
     // 1.立即就没了 2.接着加隐藏 3.重新设置好显示以便下次使用
@@ -89,8 +89,8 @@ class App {
     setTimeout(() => (form.style.display = 'grid'), 1000);
   }
 
-  _toggleElevationfield() {
-    inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
+  _toggleGainfield() {
+    inputGain.closest('.form__row').classList.toggle('form__row--hidden');
     inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
   }
 
@@ -128,13 +128,14 @@ class App {
     }
     // 2.如果是cycling，创建cycling对象；
     if (type === 'cycling') {
-      const elevation = +inputElevation.value;
+      const gain = +inputGain.value;
+      // console.log(gain);
       if (
-        !validInputs(distance, duration, elevation) ||
+        !validInputs(distance, duration, gain) ||
         !allPositive(distance, duration)
       )
         return alert('Inputs have to be positive numbers!');
-      workout = new Cycling([lat, lng], distance, duration, elevation);
+      workout = new Cycling([lat, lng], distance, duration, gain);
     }
 
     // 3.将锻炼的情况，放在 workout 数组里
@@ -215,13 +216,33 @@ class App {
           </div>
           <div class="workout__details">
             <span class="workout__icon">⛰</span>
-            <span class="workout__value">${workout.elevation}</span>
+            <span class="workout__value">${workout.gain}</span>
             <span class="workout__unit">m</span>
           </div>
         </li>`;
 
     // 将HTML插入合适的位置中
     form.insertAdjacentHTML('afterend', html);
+  }
+
+  _moveToPopup(e) {
+    const workoutEl = e.target.closest('.workout');
+    console.log(workoutEl);
+
+    if (!workoutEl) return;
+
+    const workout = this.#workouts.find(
+      work => work.id === workoutEl.dataset.id
+    );
+    console.log(workout);
+
+    this.#map.setView(workout.coords, this.#mapZoomLevel + 1, {
+      animate: true,
+      pan: {
+        duration: 1,
+      },
+    });
+    workout.click();
   }
 }
 
@@ -233,6 +254,7 @@ class Workout {
   date = new Date();
   // 如果有很多用户，有人在同时创建对象，那么依赖时间的ID就会有冲突
   id = (Date.now() + '').slice(-10);
+  clicks = 0;
 
   constructor(coords, distance, duration) {
     this.coords = coords; // [lat, lng]
@@ -246,6 +268,10 @@ class Workout {
     this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
       months[this.date.getMonth()]
     }  ${this.date.getDate()}`;
+  }
+
+  click() {
+    this.clicks++;
   }
 }
 
@@ -268,9 +294,9 @@ class Running extends Workout {
 class Cycling extends Workout {
   type = 'cycling';
 
-  constructor(coords, distance, duration, elevationGain) {
+  constructor(coords, distance, duration, gain) {
     super(coords, distance, duration);
-    this.elevationGain = elevationGain;
+    this.gain = gain;
     this.clacSpeed();
     this._setDescription();
   }
