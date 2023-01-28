@@ -24,8 +24,8 @@ const renderCountry = function (data, className = '') {
         <h3 class="country__name">${data.name.common}</h3>
         <h4 class="country__region">${data.region}</h4>
         <p class="country__row"><span>👫</span>${(
-          +data.population / 100000000
-        ).toFixed(1)} 亿人</p>
+          +data.population / 1000000
+        ).toFixed(1)} million people</p>
         <p class="country__row"><span>🗣️</span>${
           Object.values(data.languages)[0]
         }</p>
@@ -50,7 +50,7 @@ const getCountryAndNeighbour = function (country) {
 
   // send 请求将在后台运行，一旦得到数据就会触发“load"，然后开始加载回调函数。
   request.addEventListener('load', function () {
-    // 只取第3个
+    // 只取第1个，这个库里中国有4个地区
     const [data, ...others] = JSON.parse(this.responseText);
     console.log(data);
     // 2. 渲染当前的country国家
@@ -120,7 +120,29 @@ console.log(request);
 const getCountryData = function (country) {
   fetch(`https://restcountries.com/v3.1/name/${country}`)
     .then(response => response.json())
-    .then(data => renderCountry(data[0]));
+    // 下面的then方法被return后，接着处理。不要在fetch获取数据后直接.then进行处理，这等于还是在上一个then里面调用then，回到了回调地狱。
+    // 不过感觉then方法这个方式更加地狱了
+    .then(data => {
+      renderCountry(data[0]);
+      const neighbour = data[0].borders[0];
+
+      // 如果不存在，立即返回
+      if (!neighbour) return;
+
+      // 获取邻国
+      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+    })
+    // 以下处理的是上个then方法return后的数据
+    .then(response => response.json())
+    .then(data => {
+      renderCountry(data[0], 'neighbour');
+
+      // 获取邻国的邻国
+      const neighbour1 = data[0].borders[0];
+      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour1}`);
+    })
+    .then(response => response.json())
+    .then(data => renderCountry(data[0], 'neighbour'));
 };
 
 getCountryData('cn');
