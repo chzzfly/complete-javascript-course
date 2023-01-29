@@ -16,6 +16,7 @@ const countriesContainer = document.querySelector('.countries');
 // const dataNone = request.responseText;
 // console.log(dataNone);
 
+// 渲染获取的数据到HTML文档中，显示在网页上。
 const renderCountry = function (data, className = '') {
   const html = `
   <article class="country ${className}">
@@ -40,7 +41,7 @@ const renderCountry = function (data, className = '') {
 };
 
 /*
-// 函数：调取某国家，然后在HTML中显示一些数据
+// 函数：调取某国家的数据
 const getCountryAndNeighbour = function (country) {
   // 1. 获取当前的country国家
   const request = new XMLHttpRequest();
@@ -100,7 +101,7 @@ setTimeout(() => {
 */
 
 // 现代（modern）调用方式
-// 使用 fetch 发送一个 get 请求，它还有很多参数，但现在不深究
+// 使用 fetch 发送一个 get 请求，它还有很多参数，不过现在不深究
 const request = fetch('https://restcountries.com/v3.1/name/cn');
 console.log(request);
 
@@ -120,8 +121,9 @@ console.log(request);
 const getCountryData = function (country) {
   fetch(`https://restcountries.com/v3.1/name/${country}`)
     .then(response => response.json())
-    // 下面的then方法被return后，接着处理。不要在fetch获取数据后直接.then进行处理，这等于还是在上一个then里面调用then，回到了回调地狱。
-    // 不过感觉then方法这个方式更加地狱了
+    // 下面的then方法被return后，接着处理。
+    // 不要在fetch获取数据后直接.then进行处理，这等于还是在上一个then里面继续调用then，回到了回调地狱。
+    // 不过感觉then方法更加地狱了
     .then(data => {
       renderCountry(data[0]);
       const neighbour = data[0].borders[0];
@@ -136,13 +138,14 @@ const getCountryData = function (country) {
     .then(response => response.json())
     .then(data => {
       renderCountry(data[0], 'neighbour');
+    });
 
-      // 获取邻国的邻国
-      const neighbour1 = data[0].borders[0];
-      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour1}`);
-    })
-    .then(response => response.json())
-    .then(data => renderCountry(data[0], 'neighbour'));
+  //   // 获取邻国的邻国
+  //   const neighbour1 = data[0].borders[0];
+  //   return fetch(`https://restcountries.com/v3.1/alpha/${neighbour1}`);
+  // })
+  // .then(response => response.json())
+  // .then(data => renderCountry(data[0], 'neighbour'));
 };
 
 getCountryData('cn');
