@@ -37,6 +37,12 @@ const renderCountry = function (data, className = '') {
 </article>`;
 
   countriesContainer.insertAdjacentHTML('beforeend', html);
+};
+
+// 在网页上输出错误消息
+
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
   countriesContainer.style.opacity = 1;
 };
 
@@ -102,8 +108,8 @@ setTimeout(() => {
 
 // 现代（modern）调用方式
 // 使用 fetch 发送一个 get 请求，它还有很多参数，不过现在不深究
-const request = fetch('https://restcountries.com/v3.1/name/cn');
-console.log(request);
+// const request = fetch('https://restcountries.com/v3.1/name/portugal');
+// console.log(request);
 
 // const getCountryData = function (country) {
 //   fetch(`https://restcountries.com/v3.1/name/${country}`)
@@ -117,35 +123,86 @@ console.log(request);
 //     });
 // };
 
+// 将获取JSON和捕获错误封装到一个函数中：
+const getJSON = function (url, errorMsg = 'Something went wrong') {
+  return fetch(url).then(response => {
+    // console.log(response);
+
+    if (!response.ok) throw new Error(`${errorMsg} ${response.status}`);
+
+    return response.json();
+  });
+};
+
 // 使用箭头函数简化代码：
+// const getCountryData = function (country) {
+//   fetch(`https://restcountries.com/v3.1/name/${country}`)
+//     .then(response => {
+//       console.log(response);
+
+//       if (!response.ok)
+//         throw new Error(`Country not found. ${response.status}`);
+
+//       return response.json();
+//     })
+//     // 下面的then方法被return后，接着处理。
+//     // 不要在fetch获取数据后直接.then进行处理，这等于还是在上一个then里面继续调用then，回到了回调地狱。
+//     // 不过感觉then方法更加地狱了
+//     .then(data => {
+//       renderCountry(data[0]);
+//       const neighbour = data[0].borders[0];
+
+//       // 如果不存在，立即返回
+//       if (!neighbour) return;
+
+//       // 获取邻国
+//       return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+//     })
+//     // 以下处理的是上个then方法return后的数据
+//     .then(response => getJSON(response))
+//     .then(data => {
+//       renderCountry(data[0], 'neighbour');
+//     })
+//     .catch(err => {
+//       console.error(`${err} 💥💢💥`);
+//       renderError(`Something went wrong 💥💢💥 ${err.message} Try again!</br>`);
+//     });
+
+//   //   // 获取邻国的邻国
+//   //   const neighbour1 = data[0].borders[0];
+//   //   return fetch(`https://restcountries.com/v3.1/alpha/${neighbour1}`);
+//   // })
+//   // .then(response => response.json())
+//   // .then(data => renderCountry(data[0], 'neighbour'));
+// };
+
+// 使用getJSON函数简化代码
 const getCountryData = function (country) {
-  fetch(`https://restcountries.com/v3.1/name/${country}`)
-    .then(response => response.json())
-    // 下面的then方法被return后，接着处理。
-    // 不要在fetch获取数据后直接.then进行处理，这等于还是在上一个then里面继续调用then，回到了回调地狱。
-    // 不过感觉then方法更加地狱了
+  getJSON(`https://restcountries.com/v3.1/name/${country}`, 'Country not found')
     .then(data => {
       renderCountry(data[0]);
+
       const neighbour = data[0].borders[0];
 
       // 如果不存在，立即返回
-      if (!neighbour) return;
+      if (!neighbour) throw new Error('No neighbour!');
 
       // 获取邻国
-      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+      return getJSON(
+        `https://restcountries.com/v3.1/alpha/${neighbour}`,
+        'Country not found'
+      );
     })
-    // 以下处理的是上个then方法return后的数据
-    .then(response => response.json())
     .then(data => {
       renderCountry(data[0], 'neighbour');
-    });
-
-  //   // 获取邻国的邻国
-  //   const neighbour1 = data[0].borders[0];
-  //   return fetch(`https://restcountries.com/v3.1/alpha/${neighbour1}`);
-  // })
-  // .then(response => response.json())
-  // .then(data => renderCountry(data[0], 'neighbour'));
+    })
+    .catch(err => {
+      console.error(`${err} 💥💢💥`);
+      renderError(`Something went wrong 💥💢💥 ${err.message} Try again!</br>`);
+    })
+    .finally(() => (countriesContainer.style.opacity = 1));
 };
 
-getCountryData('cn');
+btn.addEventListener('click', function () {
+  getCountryData('cn');
+});
