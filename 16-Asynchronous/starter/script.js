@@ -275,6 +275,7 @@ console.log('Test end');
 
 /*
 // build a simple promise,promise(executor function)
+
 const lotteryPromise = new Promise(function (resolve, reject) {
   console.log('Lotter draw is happening 🎈');
   setTimeout(function () {
@@ -290,6 +291,7 @@ lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
 
 */
 
+/*
 // 将setTimeout promisifying 承诺化
 const wait = function (seconds) {
   return new Promise(function (resolve) {
@@ -336,3 +338,25 @@ wait(1)
 // 通过Promise类上的static方法，创建一个promise,fulfilled and reject.
 Promise.resolve('abc').then(x => console.log(x));
 Promise.reject(new Error('abc')).catch(x => console.error(x));
+
+*/
+
+// 这是一个异步请求，把任务弄到web api那里去完成，然后立即到下一行，因此下一行先在控制台打印。
+// navigator.geolocation.getCurrentPosition(
+//   position => console.log(position),
+//   err => console.error(err)
+// );
+
+console.log('Getting position');
+
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    // navigator.geolocation.getCurrentPosition(
+    //   position => resolve(position),
+    //   err => reject(err)
+    // );
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+getPosition().then(pos => console.log(pos));
