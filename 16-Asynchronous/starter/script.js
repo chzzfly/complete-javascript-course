@@ -233,3 +233,39 @@ TEST COORDINATES 2: -33.933, 18.474
 
 GOOD LUCK 😀
 */
+
+// whereAmI()函数 会 return 整个fetch chain，所以调用这个函数后才会有所反映，而不只是做了AJAX的动作。
+const whereAmI = function (lat, lng) {
+  fetch(
+    `https://geocode.xyz/${lat},${lng}?geoit=JSON&auth=212337148291713544268x30075 `
+  )
+    .then(response => {
+      // console.log(response);
+      if (!response.ok)
+        throw new Error(`${response.status}, This is the message.`);
+      return response.json();
+    })
+    .then(data => {
+      // console.log(data);
+      console.log(`You are in ${data.city}, ${data.country}`);
+      getCountryData(data.country);
+    })
+    .catch(err => console.error(`Something Wrong. ${err.message}`));
+};
+
+// whereAmI(52.508, 13.381);
+// whereAmI(19.037, 72.873);
+// whereAmI(-33.933, 18.474);
+
+// The event loop in practice
+// js engine 里面的代码被优先执行，打印2行输出，注册两个回调函数，都在0秒后执行。
+// 这两个回调函数，一个在microtasks queue，一个在 callback queue，因此，promise先执行。
+// setTimeout()，不能保证时间，只能保证不在这个时间之前。因为要放进callback 队列等待执行，如果被微任务队列阻塞，将会花费很长时间。
+console.log('Test start');
+setTimeout(() => console.log('0 sec timer'), 0);
+Promise.resolve('Resolved promise 1').then(res => console.log(res));
+Promise.resolve('Resolved promise 2').then(res => {
+  for (let i = 1; i < 100000000; i++) {} // 累死我的电脑了
+  console.log(res);
+});
+console.log('Test end');
