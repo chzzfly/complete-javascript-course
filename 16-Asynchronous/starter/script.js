@@ -383,6 +383,7 @@ TEST DATA: Images in the img folder. Test the error handler by passing a wrong i
 GOOD LUCK 😀
 */
 
+/*
 // 选择图片要插入的地方
 const imgContainer = document.querySelector(".images");
 
@@ -431,3 +432,7 @@ createImage("./img/img-1.jpg")
     return wait(2);
   })
   .catch((err) => console.error(err));
+
+*/
+
+//  开启新篇章：async and await，consume promise
