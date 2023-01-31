@@ -181,8 +181,9 @@ const getCountryData = function (country) {
   getJSON(`https://restcountries.com/v3.1/name/${country}`, "Country not found")
     .then((data) => {
       renderCountry(data[0]);
-
+      // console.log(data[0]);
       const neighbour = data[0].borders[0];
+      // console.log(neighbour);
 
       // 如果不存在，立即返回
       if (!neighbour) throw new Error("No neighbour!");
@@ -235,23 +236,23 @@ GOOD LUCK 😀
 */
 
 // whereAmI()函数 会 return 整个fetch chain，所以调用这个函数后才会有所反映，而不只是做了AJAX的动作。
-const whereAmI = function (lat, lng) {
-  fetch(
-    `https://geocode.xyz/${lat},${lng}?geoit=JSON&auth=212337148291713544268x30075 `
-  )
-    .then((response) => {
-      // console.log(response);
-      if (!response.ok)
-        throw new Error(`${response.status}, This is the message.`);
-      return response.json();
-    })
-    .then((data) => {
-      // console.log(data);
-      console.log(`You are in ${data.city}, ${data.country}`);
-      getCountryData(data.country);
-    })
-    .catch((err) => console.error(`Something Wrong. ${err.message}`));
-};
+// const whereAmI = function (lat, lng) {
+//   fetch(
+//     `https://geocode.xyz/${lat},${lng}?geoit=JSON&auth=212337148291713544268x30075 `
+//   )
+//     .then((response) => {
+//       // console.log(response);
+//       if (!response.ok)
+//         throw new Error(`${response.status}, This is the message.`);
+//       return response.json();
+//     })
+//     .then((data) => {
+//       // console.log(data);
+//       console.log(`You are in ${data.city}, ${data.country}`);
+//       getCountryData(data.country);
+//     })
+//     .catch((err) => console.error(`Something Wrong. ${err.message}`));
+// };
 
 // whereAmI(52.508, 13.381);
 // whereAmI(19.037, 72.873);
@@ -436,3 +437,44 @@ createImage("./img/img-1.jpg")
 */
 
 //  开启新篇章：async and await，consume promise
+
+// 1. 将这个函数改写为新语法：
+// whereAmI()函数 会 return 整个fetch chain，所以调用这个函数后才会有所反映，而不只是做了AJAX的动作。
+const whereAmI = function (lat, lng) {
+  fetch(
+    `https://geocode.xyz/${lat},${lng}?geoit=JSON&auth=212337148291713544268x30075 `
+  )
+    .then((response) => {
+      // console.log(response);
+      if (!response.ok)
+        throw new Error(`${response.status}, This is the message.`);
+      return response.json();
+    })
+    .then((data) => {
+      // console.log(data);
+      console.log(`You are in ${data.city}, ${data.country}`);
+      getCountryData(data.country);
+    })
+    .catch((err) => console.error(`Something Wrong. ${err.message}`));
+};
+
+// whereAmI(52.508, 13.381);
+// whereAmI(19.037, 72.873);
+// whereAmI(-33.933, 18.474);
+
+// syntactic sugar 新的ES2017语法糖 真棒啊！相比then更加容易更加清晰！
+const whereAmI2 = async function (lat, lng) {
+  // promise 即将到来的是data数据的字符串形式
+  const response = await fetch(
+    `https://geocode.xyz/${lat},${lng}?geoit=JSON&auth=212337148291713544268x30075 `
+  );
+  // 将字符串形式的数据进行JSON解析，这也是异步的，收到后就可以使用了！
+  const data = await response.json();
+  console.log(data);
+  console.log(`You are in ${data.city}, ${data.country}`);
+  getCountryData(data.country);
+};
+
+// whereAmI2(52.508, 13.381);
+// whereAmI2(19.037, 72.873);
+whereAmI2(-33.933, 18.474);
