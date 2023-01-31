@@ -510,6 +510,7 @@ const whereAmI2 = async function (lat, lng) {
 //   console.log("3: Finished getting location");
 // })();
 
+/*
 // 并行运行异步函数：如果await 按顺序写下来，这样是先后执行的，但其实我们希望同时执行，使用 Promise.all，参数是数组，返回的也是数组，如果一个promise被拒绝，整体被拒绝。
 const get3Countries = async function (c1, c2, c3) {
   try {
@@ -593,3 +594,4 @@ Promise.any([
 ])
   .then((res) => console.log(res))
   .catch((err) => console.error(err));
+*/
