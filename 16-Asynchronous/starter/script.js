@@ -488,7 +488,7 @@ const whereAmI2 = async function (lat, lng) {
 
 // async function 异步函数究竟是什么意思？
 
-console.log("1: Will get location");
+// console.log("1: Will get location");
 // 按照程序执行的逻辑，会立即输出一个promise，而在执行下面两行代码的时候，promise的值还没到，它就是promise pending
 // const city = whereAmI2(-33.933, 18.474);
 // console.log(city);
@@ -500,12 +500,96 @@ console.log("1: Will get location");
 
 // 转换成 async await格式，而不是和 then 之类的混用
 
-(async function () {
+// (async function () {
+//   try {
+//     const city = await whereAmI2(-33.933, 18.474);
+//     console.log(`2: ${city}`);
+//   } catch (err) {
+//     console.error(`2: ${err.message} 💥`);
+//   }
+//   console.log("3: Finished getting location");
+// })();
+
+// 并行运行异步函数：如果await 按顺序写下来，这样是先后执行的，但其实我们希望同时执行，使用 Promise.all，参数是数组，返回的也是数组，如果一个promise被拒绝，整体被拒绝。
+const get3Countries = async function (c1, c2, c3) {
   try {
-    const city = await whereAmI2(-33.933, 18.474);
-    console.log(`2: ${city}`);
+    // const [data1] = await getJSON(
+    //   `https://restcountries.com/v3.1/name/${c1}`,
+    //   "Country not found"
+    // );
+    // const [data2] = await getJSON(
+    //   `https://restcountries.com/v3.1/name/${c2}`,
+    //   "Country not found"
+    // );
+    // const [data3] = await getJSON(
+    //   `https://restcountries.com/v3.1/name/${c3}`,
+    //   "Country not found"
+    // );
+    // console.log(...[data1.capital, data2.capital, data3.capital]);
+
+    const data = await Promise.all([
+      getJSON(`https://restcountries.com/v3.1/name/${c1}`),
+      getJSON(`https://restcountries.com/v3.1/name/${c2}`),
+      getJSON(`https://restcountries.com/v3.1/name/${c3}`),
+    ]);
+    console.log(data.map((d) => d[0].capital));
   } catch (err) {
-    console.error(`2: ${err.message} 💥`);
+    console.error(err);
   }
-  console.log("3: Finished getting location");
+};
+
+get3Countries("portugal", "canada", "china");
+
+// race 看谁先settled
+(async function () {
+  const res = await Promise.race([
+    getJSON(`https://restcountries.com/v3.1/name/italy`),
+    getJSON(`https://restcountries.com/v3.1/name/egypt`),
+    getJSON(`https://restcountries.com/v3.1/name/mexico`),
+  ]);
+  console.log(res[0]);
 })();
+
+// 超时拒绝
+
+const timeout = function (sec) {
+  return new Promise(function (_, reject) {
+    setTimeout(() => {
+      reject(new Error("Request took too long!"));
+    }, sec * 1000);
+  });
+};
+
+// 为什么用then，因为await只能在async里面用，还需要弄个匿名函数
+// 超时竞赛
+Promise.race([
+  getJSON(`https://restcountries.com/v3.1/name/mexico`),
+  timeout(1.5),
+])
+  .then((res) => console.log(res[0]))
+  .catch((err) => console.error(err));
+
+// Promise allSettled  vs all
+
+Promise.allSettled([
+  Promise.resolve("success"),
+  Promise.reject("Error"),
+  Promise.resolve("another success"),
+]).then((res) => console.log(res));
+
+Promise.all([
+  Promise.resolve("success"),
+  Promise.reject("Error"),
+  Promise.resolve("another success"),
+])
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err));
+
+// Promise any
+Promise.any([
+  Promise.reject("success"),
+  Promise.reject("Error"),
+  Promise.reject("another success"),
+])
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err));
