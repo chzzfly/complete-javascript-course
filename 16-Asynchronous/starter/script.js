@@ -469,18 +469,43 @@ const whereAmI2 = async function (lat, lng) {
     const response = await fetch(
       `https://geocode.xyz/${lat},${lng}?geoit=JSON&auth=212337148291713544268x30075 `
     );
-    console.log(response);
+    // console.log(response);
     if (!response.ok) throw new Error(`${response.ok}, This is the message.`);
     // 将字符串形式的数据进行JSON解析，这也是异步的，收到后就可以使用了！
     const data = await response.json();
-    console.log(data);
-    console.log(`You are in ${data.city}, ${data.country}`);
+    // console.log(data);
+    // console.log(`You are in ${data.city}, ${data.country}`);
     getCountryData(data.country);
+    return `You are in ${data.city}, ${data.country}`;
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
 // whereAmI2(52.508, 13.381);
 // whereAmI2(19.037, 72.873);
-whereAmI2(-33.933, 18.474);
+
+// async function 异步函数究竟是什么意思？
+
+console.log("1: Will get location");
+// 按照程序执行的逻辑，会立即输出一个promise，而在执行下面两行代码的时候，promise的值还没到，它就是promise pending
+// const city = whereAmI2(-33.933, 18.474);
+// console.log(city);
+// then 方法会将fulfilled的值传过来
+// whereAmI2(-33.933, 18.474)
+//   .then((city) => console.log(`2: ${city}`))
+//   .catch((err) => console.error(`2: ${err.message} 💥`))
+//   .finally(() => console.log("3: Finished getting location"));
+
+// 转换成 async await格式，而不是和 then 之类的混用
+
+(async function () {
+  try {
+    const city = await whereAmI2(-33.933, 18.474);
+    console.log(`2: ${city}`);
+  } catch (err) {
+    console.error(`2: ${err.message} 💥`);
+  }
+  console.log("3: Finished getting location");
+})();
