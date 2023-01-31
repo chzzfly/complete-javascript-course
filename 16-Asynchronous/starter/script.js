@@ -464,15 +464,21 @@ const whereAmI = function (lat, lng) {
 
 // syntactic sugar 新的ES2017语法糖 真棒啊！相比then更加容易更加清晰！
 const whereAmI2 = async function (lat, lng) {
-  // promise 即将到来的是data数据的字符串形式
-  const response = await fetch(
-    `https://geocode.xyz/${lat},${lng}?geoit=JSON&auth=212337148291713544268x30075 `
-  );
-  // 将字符串形式的数据进行JSON解析，这也是异步的，收到后就可以使用了！
-  const data = await response.json();
-  console.log(data);
-  console.log(`You are in ${data.city}, ${data.country}`);
-  getCountryData(data.country);
+  try {
+    // promise 即将到来的是data数据的字符串形式
+    const response = await fetch(
+      `https://geocode.xyz/${lat},${lng}?geoit=JSON&auth=212337148291713544268x30075 `
+    );
+    console.log(response);
+    if (!response.ok) throw new Error(`${response.ok}, This is the message.`);
+    // 将字符串形式的数据进行JSON解析，这也是异步的，收到后就可以使用了！
+    const data = await response.json();
+    console.log(data);
+    console.log(`You are in ${data.city}, ${data.country}`);
+    getCountryData(data.country);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 // whereAmI2(52.508, 13.381);
