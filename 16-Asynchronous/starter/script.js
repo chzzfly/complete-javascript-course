@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const btn = document.querySelector('.btn-country');
-const countriesContainer = document.querySelector('.countries');
+const btn = document.querySelector(".btn-country");
+const countriesContainer = document.querySelector(".countries");
 
 ///////////////////////////////////////
 
@@ -17,7 +17,7 @@ const countriesContainer = document.querySelector('.countries');
 // console.log(dataNone);
 
 // 渲染获取的数据到HTML文档中，显示在网页上。
-const renderCountry = function (data, className = '') {
+const renderCountry = function (data, className = "") {
   const html = `
   <article class="country ${className}">
   <img class="country__img" src=${data.flags.svg} />
@@ -36,13 +36,13 @@ const renderCountry = function (data, className = '') {
     </div>
 </article>`;
 
-  countriesContainer.insertAdjacentHTML('beforeend', html);
+  countriesContainer.insertAdjacentHTML("beforeend", html);
 };
 
 // 在网页上输出错误消息
 
 const renderError = function (msg) {
-  countriesContainer.insertAdjacentText('beforeend', msg);
+  countriesContainer.insertAdjacentText("beforeend", msg);
   countriesContainer.style.opacity = 1;
 };
 
@@ -124,8 +124,8 @@ setTimeout(() => {
 // };
 
 // 将获取JSON和捕获错误封装到一个函数中：
-const getJSON = function (url, errorMsg = 'Something went wrong') {
-  return fetch(url).then(response => {
+const getJSON = function (url, errorMsg = "Something went wrong") {
+  return fetch(url).then((response) => {
     // console.log(response);
 
     if (!response.ok) throw new Error(`${errorMsg} ${response.status}`);
@@ -178,33 +178,33 @@ const getJSON = function (url, errorMsg = 'Something went wrong') {
 
 // 使用getJSON函数简化代码
 const getCountryData = function (country) {
-  getJSON(`https://restcountries.com/v3.1/name/${country}`, 'Country not found')
-    .then(data => {
+  getJSON(`https://restcountries.com/v3.1/name/${country}`, "Country not found")
+    .then((data) => {
       renderCountry(data[0]);
 
       const neighbour = data[0].borders[0];
 
       // 如果不存在，立即返回
-      if (!neighbour) throw new Error('No neighbour!');
+      if (!neighbour) throw new Error("No neighbour!");
 
       // 获取邻国
       return getJSON(
         `https://restcountries.com/v3.1/alpha/${neighbour}`,
-        'Country not found'
+        "Country not found"
       );
     })
-    .then(data => {
-      renderCountry(data[0], 'neighbour');
+    .then((data) => {
+      renderCountry(data[0], "neighbour");
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(`${err} 💥💢💥`);
       renderError(`Something went wrong 💥💢💥 ${err.message} Try again!</br>`);
     })
     .finally(() => (countriesContainer.style.opacity = 1));
 };
 
-btn.addEventListener('click', function () {
-  getCountryData('cn');
+btn.addEventListener("click", function () {
+  getCountryData("cn");
 });
 
 ///////////////////////////////////////
@@ -239,18 +239,18 @@ const whereAmI = function (lat, lng) {
   fetch(
     `https://geocode.xyz/${lat},${lng}?geoit=JSON&auth=212337148291713544268x30075 `
   )
-    .then(response => {
+    .then((response) => {
       // console.log(response);
       if (!response.ok)
         throw new Error(`${response.status}, This is the message.`);
       return response.json();
     })
-    .then(data => {
+    .then((data) => {
       // console.log(data);
       console.log(`You are in ${data.city}, ${data.country}`);
       getCountryData(data.country);
     })
-    .catch(err => console.error(`Something Wrong. ${err.message}`));
+    .catch((err) => console.error(`Something Wrong. ${err.message}`));
 };
 
 // whereAmI(52.508, 13.381);
@@ -291,36 +291,35 @@ lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
 
 */
 
-/*
-// 将setTimeout promisifying 承诺化
+// 将setTimeout promisifying 承诺化，不能理解这个转化
 const wait = function (seconds) {
   return new Promise(function (resolve) {
     setTimeout(resolve, seconds * 1000);
   });
 };
 
-wait(1)
-  .then(() => {
-    console.log('1 second passed');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('2 second passed');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('3 second passed');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('4 second passed');
-    return wait(1);
-  })
-  .then(() => {
-    console.log('5 second passed');
-    return wait(1);
-  })
-  .then(() => console.log('6 second passed'));
+// wait(1)
+//   .then(() => {
+//     console.log('1 second passed');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('2 second passed');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('3 second passed');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('4 second passed');
+//     return wait(1);
+//   })
+//   .then(() => {
+//     console.log('5 second passed');
+//     return wait(1);
+//   })
+//   .then(() => console.log('6 second passed'));
 
 // setTimeout(() => {
 //   console.log('1 second passed');
@@ -336,10 +335,8 @@ wait(1)
 // }, 1000);
 
 // 通过Promise类上的static方法，创建一个promise,fulfilled and reject.
-Promise.resolve('abc').then(x => console.log(x));
-Promise.reject(new Error('abc')).catch(x => console.error(x));
-
-*/
+// Promise.resolve('abc').then(x => console.log(x));
+// Promise.reject(new Error('abc')).catch(x => console.error(x));
 
 // 这是一个异步请求，把任务弄到web api那里去完成，然后立即到下一行，因此下一行先在控制台打印。
 // navigator.geolocation.getCurrentPosition(
@@ -347,7 +344,7 @@ Promise.reject(new Error('abc')).catch(x => console.error(x));
 //   err => console.error(err)
 // );
 
-console.log('Getting position');
+// console.log('Getting position');
 
 const getPosition = function () {
   return new Promise(function (resolve, reject) {
@@ -359,4 +356,78 @@ const getPosition = function () {
   });
 };
 
-getPosition().then(pos => console.log(pos));
+// getPosition().then(pos => console.log(pos));
+
+///////////////////////////////////////
+// Coding Challenge #2
+
+/* 
+Build the image loading functionality that I just showed you on the screen.
+
+Tasks are not super-descriptive this time, so that you can figure out some stuff on your own. Pretend you're working on your own 😉
+
+PART 1
+1. Create a function 'createImage' which receives imgPath as an input. This function returns a promise which creates a new image (use document.createElement('img')) and sets the .src attribute to the provided image path. When the image is done loading, append it to the DOM element with the 'images' class, and resolve the promise. The fulfilled value should be the image element itself. In case there is an error loading the image ('error' event), reject the promise.
+
+If this part is too tricky for you, just watch the first part of the solution.
+
+PART 2
+2. Comsume the promise using .then and also add an error handler;
+3. After the image has loaded, pause execution for 2 seconds using the wait function we created earlier;
+4. After the 2 seconds have passed, hide the current image (set display to 'none'), and load a second image (HINT: Use the image element returned by the createImage promise to hide the current image. You will need a global variable for that 😉);
+5. After the second image has loaded, pause execution for 2 seconds again;
+6. After the 2 seconds have passed, hide the current image.
+
+TEST DATA: Images in the img folder. Test the error handler by passing a wrong image path. Set the network speed to 'Fast 3G' in the dev tools Network tab, otherwise images load too fast.
+
+GOOD LUCK 😀
+*/
+
+// 选择图片要插入的地方
+const imgContainer = document.querySelector(".images");
+
+// 1. 创建一个promise，值为路径
+const createImage = function (imgPath) {
+  return new Promise(function (resolve, reject) {
+    const img = document.createElement("img");
+    img.src = imgPath; // 这本身就是个异步的操作
+    // imgContainer.append(img); // 这里就可以直接加载，甚至不需要promise，resolve或reject
+
+    img.addEventListener("load", function () {
+      imgContainer.append(img);
+      resolve(img);
+    });
+
+    img.addEventListener("error", function () {
+      reject(new Error("Image not fond."));
+    });
+  });
+};
+
+let currentImg;
+
+createImage("./img/img-1.jpg")
+  .then((img) => {
+    currentImg = img;
+    console.log(` image 1 loaded`);
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = "none";
+    return createImage("./img/img-2.jpg");
+  })
+  .then((img) => {
+    currentImg = img;
+    console.log(` image 2 loaded`);
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = "none";
+    return createImage("./img/img-3.jpg");
+  })
+  .then((img) => {
+    currentImg = img;
+    console.log(` image 3 loaded`);
+    return wait(2);
+  })
+  .catch((err) => console.error(err));
