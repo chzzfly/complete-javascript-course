@@ -2,11 +2,16 @@
 
 // 1.导入部分值
 console.log('Importing module');
-// import { addToCart, totalPrice as price, tq } from './shopppingCart.js';
+import {
+  shippingCost,
+  addToCart,
+  totalPrice as price,
+  tq,
+} from './shopppingCart.js';
 // 无法访问module的值，因为那是private，不是global scoop的，必须要导出才能访问
-// console.log(shippingCost);
-// addToCart('辣条', 3);
-// console.log(price, tq);
+console.log(shippingCost);
+addToCart('辣条', 3);
+console.log(price, tq);
 
 // 2. 导入所有export的
 // 将shoppingCart文件中所有export的东西都导入进来；并且给这些导入的值一个namespace.
@@ -93,6 +98,7 @@ console.log(ShoppingCart2.cart);
 
 */
 
+/*
 // commonjs
 // export. and require 不会在浏览器中生效，但会在nodeJS中生效
 export.addToCart = function(product, quantity) {
@@ -102,3 +108,40 @@ export.addToCart = function(product, quantity) {
 
 // import
 const {addToCart} = require('./shoppingcart.js')
+
+*/
+
+import { cloneDeep } from 'lodash-es';
+// import cloneDeep from './node_modules/lodash-es/cloneDeep.js';
+
+const state = {
+  cart: [
+    {
+      product: 'bread',
+      quantity: 5,
+    },
+    {
+      product: 'pizza',
+      quantity: 5,
+    },
+  ],
+  user: { loggedIn: true },
+};
+
+// 浅拷贝
+// const stateClone = Object.assign({}, state);
+// console.log(state);
+// console.log(stateClone);
+// state.user.loggedIn = false;
+// console.log(stateClone);
+
+// 深拷贝！
+const stateDeepClone = cloneDeep(state);
+console.log(state);
+state.user.loggedIn = false;
+console.log(stateDeepClone);
+
+// 热重载:不会丢失页面的状态
+if (module.hot) {
+  module.hot.accept();
+}
