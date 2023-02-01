@@ -23,6 +23,7 @@ console.log('Importing module');
 
 // 默认导出无须名字，通常一个模块只有一个，我们可以在导入时任意起名字，还不需要花括号。
 
+/*
 import add, { cart } from './shopppingCart.js';
 
 add('tomato', 33);
@@ -58,3 +59,33 @@ console.log(lastPost);
 // 使用 top-level await
 const lastPost2 = await getLastPost();
 console.log(lastPost2);
+*/
+
+// 模块pattern；模块模式
+const ShoppingCart2 = (function () {
+  const cart = [];
+  const shippingCost = 10;
+  const totalPrice = 237;
+  const totalQuantity = 23;
+
+  const addToCart = function (product, quantity) {
+    cart.push({ product, quantity });
+    console.log(`${quantity} ${product} added to cart`);
+  };
+
+  const orderStock = function (product, quantity) {
+    console.log(`${quantity} ${product} ordered from supplier`);
+  };
+
+  return {
+    addToCart,
+    cart,
+    totalPrice,
+    totalQuantity,
+  };
+})();
+
+// 函数已经执行完毕，返回了这四个值，为什么还能访问之前的数据，因为闭包。
+// 闭包允许函数访问它出生时所有存在的变量，比如addtocart函数可以访问cart数据变量。
+ShoppingCart2.addToCart('apple', 4);
+console.log(ShoppingCart2.cart);
