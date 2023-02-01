@@ -61,6 +61,7 @@ const lastPost2 = await getLastPost();
 console.log(lastPost2);
 */
 
+/*
 // 模块pattern；模块模式
 const ShoppingCart2 = (function () {
   const cart = [];
@@ -89,3 +90,15 @@ const ShoppingCart2 = (function () {
 // 闭包允许函数访问它出生时所有存在的变量，比如addtocart函数可以访问cart数据变量。
 ShoppingCart2.addToCart('apple', 4);
 console.log(ShoppingCart2.cart);
+
+*/
+
+// commonjs
+// export. and require 不会在浏览器中生效，但会在nodeJS中生效
+export.addToCart = function(product, quantity) {
+  cart.push({ product, quantity });
+  console.log(`${quantity} ${product} added to cart`);
+};
+
+// import
+const {addToCart} = require('./shoppingcart.js')
