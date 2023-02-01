@@ -141,7 +141,7 @@ console.log(state);
 state.user.loggedIn = false;
 console.log(stateDeepClone);
 
-// 热重载:不会丢失页面的状态
-if (module.hot) {
-  module.hot.accept();
-}
+// // 热重载:不会丢失页面的状态
+// if (module.hot) {
+//   module.hot.accept();
+// }
