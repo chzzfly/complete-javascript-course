@@ -1,4 +1,7 @@
-var budget = [
+// 'use strict'; 在module模块中隐含
+
+// 程序；花费清单，每人有金额限制，可以检查是否超出金额，可以检查多于某金额的支出。
+const budget = [
   { value: 250, description: 'Sold old TV 📺', user: 'jonas' },
   { value: -45, description: 'Groceries 🥑', user: 'jonas' },
   { value: 3500, description: 'Monthly salary 👩‍💻', user: 'jonas' },
@@ -9,56 +12,59 @@ var budget = [
   { value: -1800, description: 'New Laptop 💻', user: 'jonas' },
 ];
 
-var limits = {
+const spendingLimits = {
   jonas: 1500,
   matilda: 100,
 };
 
-var add = function (value, description, user) {
-  if (!user) user = 'jonas';
+// 和 || 一样，遇到ture直接返回；如果不是，后面的0对于？？来说也是true，只有undefined和null 才是false
+// 如果这个对象里有user则返回user的值，如果没有则返回0
+const getLimit = user => spendingLimits?.[user] ?? 0;
+
+const addExpense = function (value, description, user = 'jonas') {
+  // 设置参数的默认值
+  // if (!user) user = 'jonas';
   user = user.toLowerCase();
 
-  var lim;
-  if (limits[user]) {
-    lim = limits[user];
-  } else {
-    lim = 0;
-  }
+  // const limit = spendingLimits[user] ? spendingLimits[user] : 0;
 
-  if (value <= lim) {
-    budget.push({ value: -value, description: description, user: user });
+  if (value <= getLimit(user)) {
+    budget.push({ value: -value, description, user });
   }
 };
-add(10, 'Pizza 🍕');
-add(100, 'Going to movies 🍿', 'Matilda');
-add(200, 'Stuff', 'Jay');
-console.log(budget);
 
-var check = function () {
-  for (var el of budget) {
-    var lim;
-    if (limits[el.user]) {
-      lim = limits[el.user];
-    } else {
-      lim = 0;
-    }
-
-    if (el.value < -lim) {
-      el.flag = 'limit';
-    }
-  }
-};
-check();
+addExpense(10, 'Pizza 🍕');
+addExpense(100, 'Going to movies 🍿', 'Matilda');
+addExpense(200, 'Stuff', 'Jay');
 
 console.log(budget);
 
-var bigExpenses = function (limit) {
-  var output = '';
-  for (var el of budget) {
-    if (el.value <= -limit) {
-      output += el.description.slice(-2) + ' / '; // Emojis are 2 chars
+const checkExpenses = function () {
+  // for (const entry of budget) {
+  //   // 和 || 一样，遇到ture直接返回；如果不是，后面的0对于？？来说也是true，只有undefined和null 才是false
+  //   // const limit = spendingLimits?.[entry.user] ?? 0;
+  //   if (entry.value < -getLimit(entry.user)) {
+  //     entry.flag = 'limit';
+  //   }
+  // }
+  budget.forEach(entry => {
+    if (-entry.value > getLimit(entry.user)) {
+      entry.flag = 'limit';
     }
-  }
+  });
+};
+checkExpenses();
+
+const logBigExpenses = function (bigLimit) {
+  let output = '';
+  for (const entry of budget)
+    output +=
+      entry.value <= -bigLimit ? `${entry.description.slice(-2)} /` : '';
+
   output = output.slice(0, -2); // Remove last '/ '
   console.log(output);
 };
+
+console.log(budget);
+
+logBigExpenses(100);
