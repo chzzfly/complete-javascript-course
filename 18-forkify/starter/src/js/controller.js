@@ -32,11 +32,15 @@ const renderSpinner = function (parentEL) {
 
 const showRecipe = async function () {
   try {
+    const id = window.location.hash.slice(1);
+    console.log(id);
+    if (!id) return;
     // 1.获取recipe数据
     renderSpinner(recipeContainer);
     const res = await fetch(
       // 'https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bcb37'
-      'https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886'
+      // 'https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886'
+      `https://forkify-api.herokuapp.com/api/v2/recipes/${id}`
     );
 
     const data = await res.json();
@@ -58,11 +62,11 @@ const showRecipe = async function () {
     };
     console.log(recipe);
 
-    // render the search result
+    // 2. render the search result
     const result = document.querySelector('.results');
     const html = `
 <li class="preview">
-  <a class="preview__link preview__link--active" href=${recipe.sourceUrl}>
+  <a class="preview__link preview__link--active" href=#${recipe.id}>
     <figure class="preview__fig">
       <img src=${recipe.image} alt=${recipe.title} />
     </figure>
@@ -79,8 +83,8 @@ const showRecipe = async function () {
 </li>
 `;
     result.insertAdjacentHTML('beforeend', html);
-    // render the recipe detail
 
+    // 3. render the recipe detail
     // 看一下这个数组每个元素返回一个HTML模板数组，然后再形成长字符串，的样子。
     // console.log(
     //   recipe.ingredients
@@ -205,4 +209,11 @@ const showRecipe = async function () {
   }
 };
 
-showRecipe();
+// showRecipe();
+
+// 实现4个事件：用户搜索，用户点击分页，用户点击recipe，用户在地址栏输入recipe ID
+// 分析：用户点击recipe，实际上是在网址中输入了hash ID，经过这个ID跳转到对应的recipe。
+
+['hashchange', 'load'].forEach(ev => window.addEventListener(ev, showRecipe));
+// window.addEventListener('hashchange', showRecipe);
+// window.addEventListener('load', showRecipe);
