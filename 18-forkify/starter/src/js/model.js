@@ -1,3 +1,6 @@
+import { API_URL } from '../config';
+import { getJSON } from './helpers';
+
 export const state = {
   recipe: {},
 };
@@ -5,18 +8,7 @@ export const state = {
 // 这个函数不返回值，它做的是更新state.recipe的值
 export const loadRecipe = async function (id) {
   try {
-    const res = await fetch(
-      // 'https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bcb37'
-      // 'https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886'
-      `https://forkify-api.herokuapp.com/api/v2/recipes/${id}`
-    );
-
-    const data = await res.json();
-
-    if (!res.ok) throw new Error(`${data.message} (${res.status})`);
-
-    // console.log(res);
-    console.log(data);
+    const data = await getJSON(`${API_URL}/${id}`);
 
     // 这里可以直接使用解构，但太长了，可读性不好，所以直接重新赋值
     const recipe = data.data.recipe;
@@ -32,6 +24,6 @@ export const loadRecipe = async function (id) {
     };
     console.log(state.recipe);
   } catch (error) {
-    alert(error);
+    console.error(`${error}💥`);
   }
 };

@@ -7,23 +7,16 @@ import 'regenerator-runtime/runtime';
 // console.log(icons);
 const recipeContainer = document.querySelector('.recipe');
 
-const timeout = function (s) {
-  return new Promise(function (_, reject) {
-    setTimeout(function () {
-      reject(new Error(`Request took too long! Timeout after ${s} second`));
-    }, s * 1000);
-  });
-};
-
 // API 地址：https://forkify-api.herokuapp.com/v2
 
 ///////////////////////////////////////
-console.log('test');
+// console.log('test');
 
+// 一方面向后端索要数据，另一方面在前端渲染数据
 const controlRecipes = async function () {
   try {
     const id = window.location.hash.slice(1);
-    console.log(id);
+    // console.log(id);
     if (!id) return;
     recipeView.renderSpinner();
 
@@ -31,7 +24,6 @@ const controlRecipes = async function () {
     await model.loadRecipe(id);
 
     // 2. render the recipe detail
-
     recipeView.render(model.state.recipe);
   } catch (error) {
     console.error(error);
@@ -41,8 +33,8 @@ const controlRecipes = async function () {
 // controlRecipes();
 
 // 实现4个事件：用户搜索，用户点击分页，用户点击recipe，用户在地址栏输入recipe ID
-// 分析：用户点击recipe，实际上是在网址中输入了hash ID，经过这个ID跳转到对应的recipe。
 
+// 分析：用户点击recipe，实际上是在网址中输入了hash ID，经过这个ID跳转到对应的recipe。
 ['hashchange', 'load'].forEach(ev =>
   window.addEventListener(ev, controlRecipes)
 );
