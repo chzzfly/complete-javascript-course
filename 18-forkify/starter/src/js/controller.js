@@ -25,18 +25,16 @@ const controlRecipes = async function () {
 
     // 2. render the recipe detail
     recipeView.render(model.state.recipe);
+    // recipeView.renderMessage();
   } catch (error) {
-    console.error(error);
+    // console.error(error);
+    recipeView.renderError();
   }
 };
 
-// controlRecipes();
+// 直接调用这个函数，于是view那边就在监听，一旦发生变化，这边就处理
+const init = function () {
+  recipeView.addHandleRender(controlRecipes);
+};
 
-// 实现4个事件：用户搜索，用户点击分页，用户点击recipe，用户在地址栏输入recipe ID
-
-// 分析：用户点击recipe，实际上是在网址中输入了hash ID，经过这个ID跳转到对应的recipe。
-['hashchange', 'load'].forEach(ev =>
-  window.addEventListener(ev, controlRecipes)
-);
-// window.addEventListener('hashchange', controlRecipes);
-// window.addEventListener('load', controlRecipes);
+init();
