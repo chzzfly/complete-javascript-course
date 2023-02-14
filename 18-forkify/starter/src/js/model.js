@@ -3,9 +3,13 @@ import { getJSON } from './helpers';
 
 export const state = {
   recipe: {},
+  search: {
+    query: '',
+    results: [],
+  },
 };
 
-// 这个函数不返回值，它做的是更新state.recipe的值
+// 这个函数更新state.recipe的值，不返回任何东西。
 export const loadRecipe = async function (id) {
   try {
     const data = await getJSON(`${API_URL}/${id}`);
@@ -28,3 +32,26 @@ export const loadRecipe = async function (id) {
     throw error;
   }
 };
+
+// 实现搜索功能
+export const loadSearchResults = async function (query) {
+  try {
+    state.search.query = query;
+    const data = await getJSON(`${API_URL}?search=${query}`);
+    // console.log(data);
+    state.search.results = data.data.recipes.map(rec => {
+      return {
+        id: rec.id,
+        title: rec.title,
+        publisher: rec.publisher,
+        image: rec.image_url,
+      };
+    });
+    // console.log(state.search.results);
+  } catch (error) {
+    console.error(`${error}💥`);
+    throw error;
+  }
+};
+
+// loadSearchResults('pizza');
