@@ -1,6 +1,7 @@
 import * as model from './model';
 import recipeView from './views/recipeView';
 import searchView from './views/searchView'; //默认导出，自由重命名
+import resultsView from './views/resultsView';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -11,6 +12,10 @@ import 'regenerator-runtime/runtime';
 
 ///////////////////////////////////////
 // console.log('test');
+
+if (module.hot) {
+  module.hot.accept();
+}
 
 // 这个函数一方面向model索要数据，另一方面指导view渲染数据
 const controlRecipes = async function () {
@@ -32,16 +37,19 @@ const controlRecipes = async function () {
   }
 };
 
-// 查询某一recipe，然后打印在控制台
+// 查询某一recipe，然后渲染结果
 const controlSearchResults = async function () {
   try {
+    resultsView.renderSpinner();
+    // console.log(resultsView);
     // 获取搜索栏的query字符
     const query = searchView.getQuery();
     if (!query) return;
     // 加载query数据
     await model.loadSearchResults(query);
     // 渲染到页面上
-    console.log(model.state.search.results);
+    // console.log(model.state.search.results);
+    resultsView.render(model.state.search.results);
   } catch (error) {
     console.log(error);
   }
