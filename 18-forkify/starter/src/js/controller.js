@@ -49,7 +49,7 @@ const controlSearchResults = async function () {
     await model.loadSearchResults(query);
     // 渲染到页面上
     // console.log(model.state.search.results);
-    resultsView.render(model.state.search.results);
+    resultsView.render(model.getSearchResultsPage(3));
   } catch (error) {
     console.log(error);
   }
