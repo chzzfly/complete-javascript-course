@@ -2,10 +2,10 @@ import * as model from './model';
 import recipeView from './views/recipeView';
 import searchView from './views/searchView'; //默认导出，自由重命名
 import resultsView from './views/resultsView';
+import paginationView from './views/paginationView';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import paginationView from './views/paginationView';
 
 // console.log(icons);
 
@@ -50,7 +50,7 @@ const controlSearchResults = async function () {
     await model.loadSearchResults(query);
     // 渲染到页面上
     // console.log(model.state.search.results);
-    resultsView.render(model.getSearchResultsPage(3));
+    resultsView.render(model.getSearchResultsPage());
     // 渲染分页按钮
     paginationView.render(model.state.search);
   } catch (error) {
@@ -61,10 +61,18 @@ const controlSearchResults = async function () {
 // 之后我们会用事件来调用它，现在先手动调用它。
 // controlSearchResults();
 
+// 实现分页按钮的功能
+const controPagination = function (gotoPage) {
+  // console.log(gotoPage);
+  resultsView.render(model.getSearchResultsPage(gotoPage));
+  paginationView.render(model.state.search);
+};
+
 // 直接调用这个函数，view那边已经在监听了，一旦发生变化，就会处理
 const init = function () {
   recipeView.addHandleRender(controlRecipes);
   searchView.addHandlerSearch(controlSearchResults);
+  paginationView.addHandlerClick(controPagination);
 };
 
 init();
