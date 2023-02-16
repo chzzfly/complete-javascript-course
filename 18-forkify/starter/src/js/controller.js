@@ -5,6 +5,7 @@ import resultsView from './views/resultsView';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+import paginationView from './views/paginationView';
 
 // console.log(icons);
 
@@ -50,6 +51,8 @@ const controlSearchResults = async function () {
     // 渲染到页面上
     // console.log(model.state.search.results);
     resultsView.render(model.getSearchResultsPage(3));
+    // 渲染分页按钮
+    paginationView.render(model.state.search);
   } catch (error) {
     console.log(error);
   }
