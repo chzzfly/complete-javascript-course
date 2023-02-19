@@ -9,6 +9,7 @@ export const state = {
     page: 1,
     resultsPerPage: RES_PER_PAGE,
   },
+  bookmarks: [],
 };
 
 // 这个函数更新state.recipe的值，不返回任何东西。
@@ -28,7 +29,10 @@ export const loadRecipe = async function (id) {
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients,
     };
-    console.log(state.recipe);
+    // console.log(state.recipe);
+    if (state.bookmarks.some(bookmark => bookmark.id === recipe.id)) {
+      state.recipe.bookmarked = true;
+    } else state.recipe.bookmarked = false;
   } catch (error) {
     // console.error(`${error}💥`);
     throw error;
@@ -76,4 +80,23 @@ export const updateServings = function (newServings) {
     ing.quantity = (ing.quantity / state.recipe.servings) * newServings;
   });
   state.recipe.servings = newServings;
+};
+
+// 制作书签
+export const addBookmark = function (recipe) {
+  // 添加这个食谱
+  state.bookmarks.push(recipe);
+
+  // 将当前食谱做一个标记bookmared true
+  if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+};
+
+//
+export const deleteBookmark = function (id) {
+  // 删除这个ID的recipe食谱
+  const index = state.bookmarks.findIndex(el => el.id === id);
+  state.bookmarks.splice(index, 1);
+
+  // 将当前食谱做一个标记bookmared false
+  if (id === state.recipe.id) state.recipe.bookmarked = false;
 };

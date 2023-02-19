@@ -3,6 +3,7 @@ import recipeView from './views/recipeView';
 import searchView from './views/searchView'; //默认导出，自由重命名
 import resultsView from './views/resultsView';
 import paginationView from './views/paginationView';
+import bookmarksView from './views/bookmarksView';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -26,8 +27,9 @@ const controlRecipes = async function () {
     if (!id) return;
     recipeView.renderSpinner();
 
-    //
+    // 高亮标记目前页面显示的recipe
     resultsView.update(model.getSearchResultsPage());
+    bookmarksView.update(model.state.bookmarks);
     // 1.获取recipe数据
     await model.loadRecipe(id);
 
@@ -81,10 +83,25 @@ const controlServings = function (newServings) {
   recipeView.update(model.state.recipe);
 };
 
+//
+const controlAddBookmark = function () {
+  // 收藏或取消收藏
+  if (!model.state.recipe.bookmarked) model.addBookmark(model.state.recipe);
+  else model.deleteBookmark(model.state.recipe.id);
+
+  // console.log(model.state.recipe);
+  // 更新页面的收藏图标
+  recipeView.update(model.state.recipe);
+
+  // 渲染收藏内容
+  bookmarksView.render(model.state.bookmarks);
+};
+
 // 直接调用这个函数，view那边已经在监听了，一旦发生变化，就会处理
 const init = function () {
   recipeView.addHandleRender(controlRecipes);
   recipeView.addHandleUpdateServings(controlServings);
+  recipeView.addHandlerAddBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controPagination);
 };
