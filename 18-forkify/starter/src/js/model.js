@@ -66,3 +66,13 @@ export const getSearchResultsPage = function (page = state.search.page) {
 
   return state.search.results.slice(start, end);
 };
+
+// 更新数据：改变每种成分的数量
+export const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(ing => {
+    // 新的份量 = 原份量 * 新数量/旧数量, such as 2*(8/4)
+    // 上面老师的解法并不直观，可以直接计算出每一份食物需要的多少份的配料，然后再乘以新的食物数量。
+    ing.quantity = (ing.quantity / state.recipe.servings) * newServings;
+  });
+  state.recipe.servings = newServings;
+};

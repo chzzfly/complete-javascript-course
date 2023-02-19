@@ -15,6 +15,17 @@ export default class View {
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
+  update(data) {
+    if (!data || (Array.isArray(data) && data.length === 0))
+      return this.renderError();
+
+    this._data = data;
+    const newMarkup = this._generateMarkup();
+
+    // 将字符串转换成真正的DOM对象，但并不真正存在在页面上，virtual dom
+    const newDom = document.createRange().createContextualFragment(newMarkup);
+  }
+
   #clear() {
     // 直接删除这里的所有内部元素
     this._parentElement.innerHTML = '';

@@ -68,9 +68,20 @@ const controPagination = function (gotoPage) {
   paginationView.render(model.state.search);
 };
 
+// 食物份数更改，
+const controlServings = function (newServings) {
+  // 1.更新state中的数据
+  model.updateServings(newServings);
+  // 2.根据数据更新食谱视图
+  // recipeView.render(model.state.recipe);
+  // 2.现在我们只更新变化的部分，而非整个食谱视图
+  recipeView.update(model.state.recipe);
+};
+
 // 直接调用这个函数，view那边已经在监听了，一旦发生变化，就会处理
 const init = function () {
   recipeView.addHandleRender(controlRecipes);
+  recipeView.addHandleUpdateServings(controlServings);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controPagination);
 };
