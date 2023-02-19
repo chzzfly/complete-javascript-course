@@ -29,6 +29,8 @@ const controlRecipes = async function () {
 
     // 高亮标记目前页面显示的recipe
     resultsView.update(model.getSearchResultsPage());
+    // 更新bookmarks view，在这之前，bookmarks view已经加载了
+    // debugger;
     bookmarksView.update(model.state.bookmarks);
     // 1.获取recipe数据
     await model.loadRecipe(id);
@@ -37,7 +39,7 @@ const controlRecipes = async function () {
     recipeView.render(model.state.recipe);
     // recipeView.renderMessage();
   } catch (error) {
-    // console.error(error);
+    console.error(error);
     recipeView.renderError();
   }
 };
@@ -97,8 +99,13 @@ const controlAddBookmark = function () {
   bookmarksView.render(model.state.bookmarks);
 };
 
+const controlBookmarks = function () {
+  bookmarksView.render(model.state.bookmarks);
+};
+
 // 直接调用这个函数，view那边已经在监听了，一旦发生变化，就会处理
 const init = function () {
+  bookmarksView.addHandlerRender(controlBookmarks);
   recipeView.addHandleRender(controlRecipes);
   recipeView.addHandleUpdateServings(controlServings);
   recipeView.addHandlerAddBookmark(controlAddBookmark);

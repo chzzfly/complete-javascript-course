@@ -82,6 +82,11 @@ export const updateServings = function (newServings) {
   state.recipe.servings = newServings;
 };
 
+// 将数据存在本地存储中
+const persistBookmarks = function () {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+
 // 制作书签
 export const addBookmark = function (recipe) {
   // 添加这个食谱
@@ -89,9 +94,11 @@ export const addBookmark = function (recipe) {
 
   // 将当前食谱做一个标记bookmared true
   if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+
+  persistBookmarks();
 };
 
-//
+// 删除收藏的食谱
 export const deleteBookmark = function (id) {
   // 删除这个ID的recipe食谱
   const index = state.bookmarks.findIndex(el => el.id === id);
@@ -99,4 +106,13 @@ export const deleteBookmark = function (id) {
 
   // 将当前食谱做一个标记bookmared false
   if (id === state.recipe.id) state.recipe.bookmarked = false;
+  persistBookmarks();
 };
+
+const init = function () {
+  const storage = localStorage.getItem('bookmarks');
+  if (storage) state.bookmarks = JSON.parse(storage);
+};
+init();
+
+console.log(state.bookmarks);
