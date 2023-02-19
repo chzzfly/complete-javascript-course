@@ -26,6 +26,8 @@ const controlRecipes = async function () {
     if (!id) return;
     recipeView.renderSpinner();
 
+    //
+    resultsView.update(model.getSearchResultsPage());
     // 1.获取recipe数据
     await model.loadRecipe(id);
 
@@ -46,6 +48,7 @@ const controlSearchResults = async function () {
     // 获取搜索栏的query字符
     const query = searchView.getQuery();
     if (!query) return;
+
     // 加载query数据
     await model.loadSearchResults(query);
     // 渲染到页面上
@@ -54,7 +57,7 @@ const controlSearchResults = async function () {
     // 渲染分页按钮
     paginationView.render(model.state.search);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
