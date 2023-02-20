@@ -4,6 +4,7 @@ import searchView from './views/searchView'; //默认导出，自由重命名
 import resultsView from './views/resultsView';
 import paginationView from './views/paginationView';
 import bookmarksView from './views/bookmarksView';
+import addRecipeView from './views/addRecipeView';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -103,6 +104,10 @@ const controlBookmarks = function () {
   bookmarksView.render(model.state.bookmarks);
 };
 
+const controlAddRecipe = function (newRecipe) {
+  console.log(newRecipe);
+};
+
 // 直接调用这个函数，view那边已经在监听了，一旦发生变化，就会处理
 const init = function () {
   bookmarksView.addHandlerRender(controlBookmarks);
@@ -111,6 +116,7 @@ const init = function () {
   recipeView.addHandlerAddBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controPagination);
+  addRecipeView._addHandlerUpload(controlAddRecipe);
 };
 
 init();
