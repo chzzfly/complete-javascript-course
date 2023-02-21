@@ -12,23 +12,28 @@ export const state = {
   bookmarks: [],
 };
 
+const createRecipeObject = function (data) {
+  const { recipe } = data.data;
+  return {
+    id: recipe.id,
+    title: recipe.title,
+    publisher: recipe.publisher,
+    sourceUrl: recipe.source_url,
+    image: recipe.image_url,
+    servings: recipe.servings,
+    cookingTime: recipe.cooking_time,
+    ingredients: recipe.ingredients,
+    ...(recipe.key && { key: recipe.key }),
+  };
+};
+
 // 这个函数更新state.recipe的值，不返回任何东西。
 export const loadRecipe = async function (id) {
   try {
     const data = await getJSON(`${API_URL}/${id}`);
 
-    // 这里可以直接使用解构，但太长了，可读性不好，所以直接重新赋值
-    const recipe = data.data.recipe;
-    state.recipe = {
-      id: recipe.id,
-      title: recipe.title,
-      publisher: recipe.publisher,
-      sourceUrl: recipe.source_url,
-      image: recipe.image_url,
-      servings: recipe.servings,
-      cookingTime: recipe.cooking_time,
-      ingredients: recipe.ingredients,
-    };
+    state.recipe = createRecipeObject(data);
+
     // console.log(state.recipe);
     if (state.bookmarks.some(bookmark => bookmark.id === recipe.id)) {
       state.recipe.bookmarked = true;
@@ -145,6 +150,8 @@ export const uploadRecipe = async function (newRecipe) {
     // 这里的data是发送成功后返回的promise
     const data = await sendJSON(`${API_URL}?key=${KEY}`, recipe);
     console.log(data);
+    state.recipe = createRecipeObject(data);
+    addBookmark(state.recipe);
   } catch (err) {
     throw err;
   }

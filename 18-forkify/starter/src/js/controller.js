@@ -8,6 +8,7 @@ import addRecipeView from './views/addRecipeView';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+import { MODAL_CLOSE_SEC } from '../config';
 
 // console.log(icons);
 
@@ -106,12 +107,23 @@ const controlBookmarks = function () {
 
 const controlAddRecipe = async function (newRecipe) {
   try {
-    console.log(newRecipe);
+    // 显示spinner转圈圈，显示正在上传数据
+    addRecipeView.renderSpinner();
+    // console.log(newRecipe);
     // console.log(Object.entries(newRecipe));
     await model.uploadRecipe(newRecipe);
+    // console.log(model.state.recipe);
+    // 渲染用户上传的食谱
+    recipeView.render(model.state.recipe);
+    // 弹出成功上传的提示框
+    addRecipeView.renderMessage();
+    // 2.5秒后关闭modal窗口
+    setTimeout(() => {
+      addRecipeView._toggleWindow();
+    }, MODAL_CLOSE_SEC * 1000);
   } catch (err) {
     // console.log(err);
-    console.error('☹', err);
+    // console.error('☹', err);
     addRecipeView.renderError(err.message);
   }
 };
