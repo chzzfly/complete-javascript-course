@@ -1,5 +1,5 @@
-import { API_URL, RES_PER_PAGE } from '../config';
-import { getJSON } from './helpers';
+import { API_URL, KEY, RES_PER_PAGE } from '../config';
+import { getJSON, sendJSON } from './helpers';
 
 export const state = {
   recipe: {},
@@ -142,6 +142,9 @@ export const uploadRecipe = async function (newRecipe) {
       ingredients,
     };
     console.log(recipe);
+    // 这里的data是发送成功后返回的promise
+    const data = await sendJSON(`${API_URL}?key=${KEY}`, recipe);
+    console.log(data);
   } catch (err) {
     throw err;
   }
