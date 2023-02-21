@@ -104,8 +104,16 @@ const controlBookmarks = function () {
   bookmarksView.render(model.state.bookmarks);
 };
 
-const controlAddRecipe = function (newRecipe) {
-  console.log(newRecipe);
+const controlAddRecipe = async function (newRecipe) {
+  try {
+    console.log(newRecipe);
+    // console.log(Object.entries(newRecipe));
+    await model.uploadRecipe(newRecipe);
+  } catch (err) {
+    // console.log(err);
+    console.error('☹', err);
+    addRecipeView.renderError(err.message);
+  }
 };
 
 // 直接调用这个函数，view那边已经在监听了，一旦发生变化，就会处理
