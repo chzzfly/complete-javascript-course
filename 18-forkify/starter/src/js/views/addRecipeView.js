@@ -20,7 +20,7 @@ class AddrecipeView extends View {
   _toggleWindow() {
     this._overlay.classList.toggle('hidden');
     this._window.classList.toggle('hidden');
-    console.log('click');
+    // console.log('click');
   }
 
   // 里面函数的this指向的是this._btnOpen

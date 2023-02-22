@@ -121,7 +121,7 @@ const init = function () {
 };
 init();
 
-console.log(state.bookmarks);
+// console.log(state.bookmarks);
 
 export const uploadRecipe = async function (newRecipe) {
   try {
