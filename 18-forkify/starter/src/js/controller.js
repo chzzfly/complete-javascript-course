@@ -117,6 +117,10 @@ const controlAddRecipe = async function (newRecipe) {
     recipeView.render(model.state.recipe);
     // 弹出成功上传的提示框
     addRecipeView.renderMessage();
+    // 渲染bookmarks view
+    bookmarksView.render(model.state.bookmarks);
+    // 更改网址栏的地址
+    window.history.pushState(null, '', `${model.state.recipe.id}`);
     // 2.5秒后关闭modal窗口
     setTimeout(() => {
       addRecipeView._toggleWindow();
