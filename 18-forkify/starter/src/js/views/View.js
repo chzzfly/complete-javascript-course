@@ -5,6 +5,15 @@ export default class View {
   _data;
 
   // 对象在controller里调用了，传递的参数为state.recipe
+  /**
+   * 将食谱对象渲染到DOM中
+   * @param {Object | Object[]} data 这些数据将会被渲染，比如recipe
+   * @param {boolean} [render=true] 如果为false，生成标签字符串而不是渲染到DOM
+   * @returns {undefined | string} 如果render为false，则会返回标签字符串
+   * @this {Object} View instance
+   * @author 异世界旋风猛男
+   * @todo 完成部署
+   */
   render(data, render = true) {
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError();
